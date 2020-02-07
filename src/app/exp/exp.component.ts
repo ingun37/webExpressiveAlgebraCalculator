@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
-import { Exp } from '../exp';
+import * as E from '../exp';
 
 @Component({
   selector: 'app-exp',
@@ -8,12 +8,14 @@ import { Exp } from '../exp';
   styleUrls: ['./exp.component.scss']
 })
 export class ExpComponent implements OnInit {
-  @Input() exp: Exp;
-
+  @Input() exp: E.Exp;
+  mat:E.Matrix = null
   constructor() { }
 
   ngOnInit() {
-    console.log(this.exp);
+    if (this.exp instanceof E.Matrix) {
+      this.mat = this.exp
+    }
   }
 
 }
