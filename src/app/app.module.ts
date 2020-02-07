@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatCardModule} from '@angular/material/card';
 import { MatrixComponent } from './matrix/matrix.component';
 import { CellComponent } from './cell/cell.component';
-import { RowComponent } from './row/row.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +16,6 @@ import { RowComponent } from './row/row.component';
     ExpComponent,
     MatrixComponent,
     CellComponent,
-    RowComponent,
   ],
   imports: [
     BrowserModule,

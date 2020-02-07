@@ -1,1 +1,9 @@
-<app-row *ngFor="let row of mat.elements" [exps]="row"></app-row>
+<!-- <app-row *ngFor="let row of mat.elements" [exps]="row"></app-row> -->
+<table>
+    <tr *ngFor="let row of mat.elements">
+
+        <td *ngFor="let cell of row">
+            <app-cell [exp]="cell"></app-cell>
+        </td>
+    </tr>
+</table>

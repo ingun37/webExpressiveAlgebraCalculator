@@ -17,6 +17,10 @@ export class CellComponent implements OnInit {
 
   ngOnInit() {
   }
+  onResized(e) {
+    console.log("fuck")
+    console.log(e)
+  }
   ngAfterViewInit() {
     console.log(this.texview)
     katex.render(this.exp.latex, this.texview.nativeElement, {
