@@ -1,6 +1,7 @@
 <p>exp works!</p>
 <app-tex [tex]="exp.latex"></app-tex>
-
-<div *ngFor="let kid of exp.kids">
-    <app-exp [exp]="kid"></app-exp>
+<div class="container">
+    <mat-card *ngFor="let kid of exp.kids">
+        <app-exp [exp]="kid"></app-exp>
+    </mat-card>
 </div>
