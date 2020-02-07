@@ -11,7 +11,7 @@ import {MatCardModule} from '@angular/material/card';
   declarations: [
     AppComponent,
     TexComponent,
-    ExpComponent
+    ExpComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Input } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Input, Directive } from '@angular/core';
+import katex from 'katex';
 
 @Component({
   selector: 'app-tex',
@@ -8,9 +9,18 @@ import { Input } from '@angular/core';
 })
 export class TexComponent implements OnInit {
   @Input() tex:string;
+  @ViewChild("texview", {static: false}) texview: ElementRef;
+
   constructor() { }
 
   ngOnInit() {
+    
   }
-
+  ngAfterViewInit() {
+    console.log(this.texview)
+    katex.render(this.tex, this.texview.nativeElement, {
+      throwOnError: false,
+      output: "mathml"
+    });
+  }
 }
