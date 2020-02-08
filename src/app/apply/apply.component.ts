@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { Lineage, Exp, Add, Var } from '../exp';
 import { SystemService } from '../system.service';
 
@@ -11,15 +11,17 @@ import { SystemService } from '../system.service';
 export class ApplyComponent implements OnInit {
 
   lineage: Lineage
-  get options(): Exp[] {
+  get options(): Option[] {
     let exp = this.lineage.exp
     let unusedVar = this.system.unusedVar
-    return [
+    let availables:Exp[] = [
       new Add(exp, new Var(unusedVar))
     ]
+    return availables.map(x=>new Option(x, x))
   }
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<ApplyComponent>,
     private system:SystemService
     ) {
     this.lineage = data.lineage
@@ -30,4 +32,14 @@ export class ApplyComponent implements OnInit {
   ngOnInit() {
   }
 
+  onPick(option:Option) {
+    this.dialogRef.close(option.original)
+  }
+}
+
+class Option {
+  constructor (
+    public original: Exp,
+    public show: Exp
+  ) {}
 }

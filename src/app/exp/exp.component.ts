@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Input } from '@angular/core';
 import * as E from '../exp';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplyComponent } from '../apply/apply.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-exp',
@@ -11,6 +12,7 @@ import { ApplyComponent } from '../apply/apply.component';
 })
 export class ExpComponent implements OnInit {
   @Input() lineage: E.Lineage;
+  @Output() changed = new EventEmitter<E.Exp>(); 
   get exp():E.Exp {
     return this.lineage.exp
   }
@@ -22,13 +24,16 @@ export class ExpComponent implements OnInit {
   }
   constructor(public dialog: MatDialog) { }
 
-  openDialogFor(lineage:E.Lineage) {
-    this.dialog.open(ApplyComponent, {
+  openDialogFor(lineage:E.Lineage): Promise<E.Exp> {
+    return this.dialog.open(ApplyComponent, {
       data: {lineage:lineage}
-    })
+    }).afterClosed().toPromise().then(x=> x as E.Exp)
   }
+
   onTexClick() {
-    this.openDialogFor(this.lineage)
+    this.openDialogFor(this.lineage).then(newExp => {
+      this.changed.emit(newExp)
+    })
   }
 
   ngOnInit() {
@@ -40,7 +45,11 @@ export class ExpComponent implements OnInit {
   }
 
   onCellClick(event:[number, number]) {
-    console.log(event)
+    let ri = event[0]
+    let ci = event[1]
+    this.openDialogFor(this.makeLineageForKid(this.cell2kid(ri, ci))).then(newMatElement => {
+      this.onKidChanged(this.cell2kid(ri, ci), newMatElement)
+    })
   }
 
   makeLineageForKid(kidIdx:number): E.Lineage {
@@ -48,5 +57,16 @@ export class ExpComponent implements OnInit {
     let kidExp = this.lineage.exp.kids[kidIdx]
     let newLine:[E.Exp, number] = [thisExp, kidIdx]
     return new E.Lineage(this.lineage.chain.concat([newLine])  , kidExp)
+  }
+
+  onKidChanged(kidIdx:number, newKidExp:E.Exp) {
+    let newMe = this.exp.clone(this.exp.kids.map((e, ki)=>{
+      if (ki == kidIdx) {
+        return newKidExp
+      } else {
+        return e
+      }
+    }))
+    this.changed.emit(newMe)
   }
 }

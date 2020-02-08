@@ -2,6 +2,6 @@
     <button mat-button>Add Variable</button>
 </mat-toolbar-row>
 <div class="container">
-    <app-exp [lineage]="rootLineage"></app-exp>
+    <app-exp [lineage]="rootLineage" (changed)="mainChanged($event)"></app-exp>
     <app-var *ngFor="let pair of vars" [name]="pair[0]" [exp]="pair[1]"></app-var>
 </div>

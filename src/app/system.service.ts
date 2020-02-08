@@ -38,13 +38,7 @@ function usedVars(e:Exp):string[] {
 function caretesian(xs:string[], ys:string[]): string[] {
   return flatMap(xs, x => ys.map(y=> x.concat(y)))
 }
-function composeN(n:number, seed:string, f:(x:string)=>string): string {
-  if (n == 0) {
-    return seed
-  } else {
-    return f(composeN(n-1, seed, f))
-  }
-}
+
 function freeMonoid(): Sequence<string> {
   let gen = asSequence("ABCDEFGHIJKLMNOPQRSTUVWXYZ").toArray()
   return generateSequence(0, n=>n+1).map(n => {

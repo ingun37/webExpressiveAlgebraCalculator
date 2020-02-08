@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Input, Directive } from '@angular/core';
 import katex from 'katex';
 
@@ -8,7 +8,20 @@ import katex from 'katex';
   styleUrls: ['./tex.component.scss']
 })
 export class TexComponent implements OnInit {
-  @Input() tex:string;
+  _tex:string = ""
+  @Input()
+  set tex(tex: string) {
+    this._tex = tex
+    this.renderMath()
+  }
+  renderMath() {
+    if (this.texview) {
+      katex.render(this._tex, this.texview.nativeElement, {
+        throwOnError: false,
+        output: "mathml"
+      });
+    }
+  } 
   @ViewChild("texview", {static: false}) texview: ElementRef;
 
   constructor() { }
@@ -16,11 +29,7 @@ export class TexComponent implements OnInit {
   ngOnInit() {
     
   }
-  ngAfterViewInit() {
-    console.log(this.texview)
-    katex.render(this.tex, this.texview.nativeElement, {
-      throwOnError: false,
-      output: "mathml"
-    });
+  ngAfterViewInit () {
+    this.renderMath()
   }
 }

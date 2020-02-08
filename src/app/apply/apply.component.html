@@ -1,6 +1,7 @@
-<app-tex [tex]="lineage.exp.latex" (click)="onTexClick()"></app-tex>
 <mat-list>
     <mat-list-item *ngFor="let option of options">
-        <app-tex [tex]="option.latex"></app-tex>
+        <button mat-button (click)="onPick(option)">
+            <app-tex [tex]="option.show.latex"></app-tex>
+        </button>
     </mat-list-item>
 </mat-list>
