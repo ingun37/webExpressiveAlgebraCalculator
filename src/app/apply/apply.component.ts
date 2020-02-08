@@ -59,9 +59,9 @@ class Option {
 }
 function evaluateExpression(expression:string):Exp {
   {
-    let m = parseInt(expression)
+    let m = expression.match(/^\d+$/)
     if (m) {
-      return new Scalar(m)
+      return new Scalar(parseInt(m[0]))
     }
   }
   {
