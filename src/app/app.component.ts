@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import {sampleMat, Lineage, Exp, sampleX} from './exp'
+import {sampleMat, Lineage, Exp, sampleX, Var} from './exp'
+import { SystemService } from './system.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  vars:[string, Exp][] = [["X", sampleX]]
-  rootLineage = new Lineage([], sampleMat)
+  get vars():[string, Exp][] {return this.system.vars}
+  get rootLineage() { return new Lineage([], this.system.main)}
   title = 'calc';
+  constructor (
+    private system:SystemService
+  ) {}
 }
