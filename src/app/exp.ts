@@ -9,7 +9,7 @@ export interface Exp {
     kids: Exp[]
 }
 
-export class NumExp implements Exp {
+export class Scalar implements Exp {
     get latex(): string {return `${this.n}`}
     get kids(): Exp[] { return [] }
     constructor (
@@ -46,11 +46,21 @@ export class Matrix implements Exp {
     ) {}
 }
 
+export class Var implements Exp {
+    constructor (
+        public name:string
+    ) {}
+    get latex(): string {
+        return `\\text{${this.name}}`
+    }
+    get kids():Exp[] {return []}
+}
 function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => U[]): U[] {
     return Array.prototype.concat(...array.map(callbackfn));
 }
 
-let n1 = new NumExp(1)
-let n0 = new NumExp(0)
+let n1 = new Scalar(1)
+let n0 = new Scalar(0)
 let sampleAdd = new Add(n1, n0)
 export let sampleMat = new Matrix([[n1, n0], [sampleAdd, n1]])
+export let sampleX = new Var("X")

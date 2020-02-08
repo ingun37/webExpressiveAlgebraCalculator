@@ -11,6 +11,9 @@ import { CellComponent } from './cell/cell.component';
 import { ApplyComponent } from './apply/apply.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatListModule} from '@angular/material/list';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import { VarComponent } from './var/var.component';
 
 @NgModule({
   declarations: [
@@ -20,13 +23,16 @@ import {MatListModule} from '@angular/material/list';
     MatrixComponent,
     CellComponent,
     ApplyComponent,
+    VarComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     MatCardModule,
     MatDialogModule,
-    MatListModule
+    MatListModule,
+    MatToolbarModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent],

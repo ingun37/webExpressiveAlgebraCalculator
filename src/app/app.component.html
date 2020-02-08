@@ -1,10 +1,7 @@
-<app-exp [lineage]="rootLineage"></app-exp>
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
+<mat-toolbar-row>
+    <button mat-button>Add Variable</button>
+</mat-toolbar-row>
+<div class="container">
+    <app-exp [lineage]="rootLineage"></app-exp>
+    <app-var *ngFor="let pair of vars" [name]="pair[0]" [exp]="pair[1]"></app-var>
+</div>

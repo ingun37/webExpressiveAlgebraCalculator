@@ -11,7 +11,15 @@ import { ApplyComponent } from '../apply/apply.component';
 })
 export class ExpComponent implements OnInit {
   @Input() lineage: E.Lineage;
-  mat:E.Matrix = null
+  get exp():E.Exp {
+    return this.lineage.exp
+  }
+  get mat():E.Matrix {
+    if (this.lineage.exp instanceof E.Matrix) {
+      return this.lineage.exp as E.Matrix
+    }
+    return null
+  }
   constructor(public dialog: MatDialog) { }
 
   openDialogFor(lineage:E.Lineage) {
@@ -24,9 +32,7 @@ export class ExpComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.lineage.exp instanceof E.Matrix) {
-      this.mat = this.lineage.exp as E.Matrix
-    }
+    
   }
 
   cell2kid(r:number, c:number): number {
