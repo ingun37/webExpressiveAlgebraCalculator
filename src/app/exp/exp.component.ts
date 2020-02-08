@@ -18,7 +18,15 @@ export class ExpComponent implements OnInit {
     }
   }
 
-  chainLineage(kidIdx:number): E.Lineage {
+  cell2kid(r:number, c:number): number {
+    return r * this.mat.elements[0].length + c
+  }
+
+  onCellClick(event:[number, number]) {
+    console.log(event)
+  }
+  
+  makeLineageForKid(kidIdx:number): E.Lineage {
     let thisExp = this.lineage.exp
     let kidExp = this.lineage.exp.kids[kidIdx]
     let newLine:[E.Exp, number] = [thisExp, kidIdx]

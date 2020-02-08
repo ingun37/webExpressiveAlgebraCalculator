@@ -1,4 +1,4 @@
-import { Input, Component, OnInit } from '@angular/core';
+import { Input, Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Matrix, Lineage, Exp } from '../exp';
 
 @Component({
@@ -7,24 +7,14 @@ import { Matrix, Lineage, Exp } from '../exp';
   styleUrls: ['./matrix.component.scss']
 })
 export class MatrixComponent implements OnInit {
-  @Input() lineage: Lineage;
-  get mat(): Matrix {
-    return this.lineage.exp as Matrix
-  }
+  @Input() mat: Matrix;
+  @Output() cellClick:EventEmitter<[number, number]> = new EventEmitter();
   constructor() { }
 
   ngOnInit() {
   }
 
-  cellClick(ridx:number, cidx:number) {
-    console.log(ridx, cidx)
+  onCellClick(ridx:number, cidx:number) {
+    this.cellClick.emit([ridx, cidx])
   }
-  makeLineageForCell(ridx:number, cidx:number): Lineage {
-    let thisExp = this.lineage.exp
-    let cellIdx = this.mat.elements[0].length * ridx + cidx
-    let kidExp = this.lineage.exp.kids[cellIdx]
-    let newLine:[Exp, number] = [thisExp, cellIdx]
-    return new Lineage(this.lineage.chain.concat([newLine]), kidExp)
-  }
-  
 }

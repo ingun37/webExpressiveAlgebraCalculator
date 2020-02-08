@@ -2,7 +2,7 @@
 <table>
     <tr *ngFor="let row of mat.elements; index as ridx">
         <td *ngFor="let cell of row; index as cidx">
-            <app-cell [lineage]="makeLineageForCell(ridx, cidx)" (click)="cellClick(ridx, cidx)"></app-cell>
+            <app-cell [exp]="cell" (click)="onCellClick(ridx, cidx)"></app-cell>
         </td>
     </tr>
 </table>
