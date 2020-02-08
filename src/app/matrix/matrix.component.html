@@ -1,9 +1,9 @@
 <!-- <app-row *ngFor="let row of mat.elements" [exps]="row"></app-row> -->
 <table>
-    <tr *ngFor="let row of mat.elements">
+    <tr *ngFor="let row of mat.elements; index as ridx">
 
-        <td *ngFor="let cell of row">
-            <app-cell [exp]="cell"></app-cell>
+        <td *ngFor="let cell of row; index as cidx">
+            <app-cell [exp]="cell" (click)="cellClick(ridx, cidx)"></app-cell>
         </td>
     </tr>
 </table>

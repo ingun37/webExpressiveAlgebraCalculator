@@ -13,4 +13,7 @@ export class MatrixComponent implements OnInit {
   ngOnInit() {
   }
 
+  cellClick(ridx:number, cidx:number) {
+    console.log(ridx, cidx)
+  }
 }

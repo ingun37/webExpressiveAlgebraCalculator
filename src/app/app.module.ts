@@ -8,6 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatCardModule} from '@angular/material/card';
 import { MatrixComponent } from './matrix/matrix.component';
 import { CellComponent } from './cell/cell.component';
+import { ApplyComponent } from './apply/apply.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -16,13 +18,18 @@ import { CellComponent } from './cell/cell.component';
     ExpComponent,
     MatrixComponent,
     CellComponent,
+    ApplyComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    MatCardModule
+    MatCardModule,
+    MatDialogModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ApplyComponent
+  ],
 })
 export class AppModule { }

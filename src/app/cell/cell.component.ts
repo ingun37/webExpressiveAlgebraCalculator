@@ -1,7 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { Input, Directive } from '@angular/core';
 import katex from 'katex';
 import { Exp } from '../exp';
+import { ApplyComponent } from '../apply/apply.component';
 
 @Component({
   selector: 'app-cell',
@@ -16,13 +17,9 @@ export class CellComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-  }
-  onResized(e) {
-    console.log("fuck")
-    console.log(e)
+
   }
   ngAfterViewInit() {
-    console.log(this.texview)
     katex.render(this.exp.latex, this.texview.nativeElement, {
       throwOnError: false,
       output: "mathml"
