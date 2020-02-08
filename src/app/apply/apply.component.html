@@ -1,3 +1,4 @@
+<input type="text" matInput placeholder="e.g 3 -12 1/2 -4^3 3x x+5" [formControl]="expressionControl">
 <mat-list>
     <mat-list-item *ngFor="let option of options">
         <button mat-button (click)="onPick(option)">

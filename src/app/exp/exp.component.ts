@@ -27,7 +27,13 @@ export class ExpComponent implements OnInit {
   openDialogFor(lineage:E.Lineage): Promise<E.Exp> {
     return this.dialog.open(ApplyComponent, {
       data: {lineage:lineage}
-    }).afterClosed().toPromise().then(x=> x as E.Exp)
+    }).afterClosed().toPromise().then(x=> {
+      if (x) {
+        return x as E.Exp
+      }
+      throw "no output from dialog";
+      
+    })
   }
 
   onTexClick() {
