@@ -8,14 +8,20 @@ import * as E from '../exp';
   styleUrls: ['./exp.component.scss']
 })
 export class ExpComponent implements OnInit {
-  @Input() exp: E.Exp;
+  @Input() lineage: E.Lineage;
   mat:E.Matrix = null
   constructor() { }
 
   ngOnInit() {
-    if (this.exp instanceof E.Matrix) {
-      this.mat = this.exp
+    if (this.lineage.exp instanceof E.Matrix) {
+      this.mat = this.lineage.exp as E.Matrix
     }
   }
 
+  chainLineage(kidIdx:number): E.Lineage {
+    let thisExp = this.lineage.exp
+    let kidExp = this.lineage.exp.kids[kidIdx]
+    let newLine:[E.Exp, number] = [thisExp, kidIdx]
+    return new E.Lineage(this.lineage.chain.concat([newLine])  , kidExp)
+  }
 }

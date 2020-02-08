@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { Input, Directive } from '@angular/core';
 import katex from 'katex';
-import { Exp } from '../exp';
+import { Exp, Lineage } from '../exp';
 import { ApplyComponent } from '../apply/apply.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { ApplyComponent } from '../apply/apply.component';
   styleUrls: ['./cell.component.scss']
 })
 export class CellComponent implements OnInit {
-  @Input() exp:Exp;
+  @Input() lineage:Lineage;
 
   @ViewChild("texview", {static: false}) texview: ElementRef;
 
@@ -20,7 +20,7 @@ export class CellComponent implements OnInit {
 
   }
   ngAfterViewInit() {
-    katex.render(this.exp.latex, this.texview.nativeElement, {
+    katex.render(this.lineage.exp.latex, this.texview.nativeElement, {
       throwOnError: false,
       output: "mathml"
     });

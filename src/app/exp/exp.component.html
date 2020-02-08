@@ -1,11 +1,11 @@
-<app-tex [tex]="exp.latex"></app-tex>
+<app-tex [tex]="lineage.exp.latex"></app-tex>
 <div class="container">
     <div *ngIf="mat; else elseBlock">
-        <app-matrix [mat]="mat"></app-matrix>
+        <app-matrix [lineage]="lineage"></app-matrix>
     </div>
     <ng-template #elseBlock>
-        <mat-card *ngFor="let kid of exp.kids">
-            <app-exp [exp]="kid"></app-exp>
+        <mat-card *ngFor="let kid of exp.kids; index as idx">
+            <app-exp [lineage]="chainLineage(idx)"></app-exp>
         </mat-card>
     </ng-template>
     

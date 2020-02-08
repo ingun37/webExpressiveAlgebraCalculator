@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import {sampleMat} from './exp'
+import {sampleMat, Lineage} from './exp'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  sample = sampleMat
+  rootLineage = new Lineage([], sampleMat)
   title = 'calc';
 }

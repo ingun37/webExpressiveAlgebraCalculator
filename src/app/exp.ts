@@ -1,3 +1,9 @@
+export class Lineage {
+    constructor(
+        public chain:[Exp, number][],
+        public exp:Exp
+    ) {}
+}
 export interface Exp {
     latex: string
     kids: Exp[]
