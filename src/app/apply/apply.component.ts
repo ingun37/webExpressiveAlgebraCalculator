@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { Lineage } from '../exp';
 
 @Component({
   selector: 'app-apply',
@@ -7,7 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ApplyComponent implements OnInit {
 
-  constructor() { }
+  lineage: Lineage
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    this.lineage = data.lineage
+  }
 
   ngOnInit() {
   }
