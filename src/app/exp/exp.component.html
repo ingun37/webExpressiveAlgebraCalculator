@@ -5,7 +5,7 @@
     </div>
     <ng-template #elseBlock>
         <mat-card *ngFor="let kid of exp.kids; index as idx">
-            <app-exp [lineage]="makeLineageForKid(idx)"></app-exp>
+            <app-exp [lineage]="makeLineageForKid(idx)" (changed)="onKidChanged(idx, $event)"></app-exp>
         </mat-card>
     </ng-template>
     

@@ -75,6 +75,7 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
 let n1 = new Scalar(1)
 let n0 = new Scalar(0)
 let vA = new Var("A")
+let vZ = new Var("Z")
 let sampleAdd = new Add(n1, n0)
-export let sampleMat = new Matrix([[n1, vA], [sampleAdd, n1]])
+export let sampleMat = new Add(vZ, new Matrix([[n1, vA], [sampleAdd, n1]]))
 export let sampleX = new Var("X")
