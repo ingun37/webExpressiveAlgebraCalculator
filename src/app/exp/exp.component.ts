@@ -32,7 +32,6 @@ export class ExpComponent implements OnInit {
         return x as E.Exp
       }
       throw "no output from dialog";
-      
     })
   }
 

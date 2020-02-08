@@ -1,8 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Lineage, Exp, Add, Var } from '../exp';
+import { Lineage, Exp, Add, Var, Scalar } from '../exp';
 import { SystemService } from '../system.service';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { debounce, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-apply',
@@ -10,7 +12,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./apply.component.scss']
 })
 export class ApplyComponent implements OnInit {
-  expressionControl = new FormControl('');
+  expressionControl = new FormControl('', []);
 
   lineage: Lineage
   get options(): Option[] {
@@ -30,10 +32,17 @@ export class ApplyComponent implements OnInit {
     let exp = this.lineage.exp
     let unusedVar = system
   }
-
+  previewTex:string = null
   ngOnInit() {
-    this.expressionControl.valueChanges.subscribe(val => {
-      console.log(val)
+    this.expressionControl.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(n=>{
+      let e = evaluateExpression(n)
+      if(e) {
+        this.previewTex = e.latex
+      } else {
+        this.previewTex = null
+      }
     })
   }
 
@@ -47,4 +56,31 @@ class Option {
     public original: Exp,
     public show: Exp
   ) {}
+}
+function evaluateExpression(expression:string):Exp {
+  {
+    let m = parseInt(expression)
+    if (m) {
+      return new Scalar(m)
+    }
+  }
+  {
+    let m = expression.match(/^[a-zA-Z]+$/)
+    if (m) {
+      return new Var(m[0])
+    }
+  }
+  {
+    let m = expression.match(/^(.+)\+(.+)$/)
+    if (m) {
+      let l = evaluateExpression(m[1])
+      if(l) {
+        let r = evaluateExpression(m[2])
+        if(r) {
+          return new Add(l, r)
+        }
+      }
+    }
+  }
+  return null
 }

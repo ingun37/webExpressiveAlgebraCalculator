@@ -1,4 +1,7 @@
-<input type="text" matInput placeholder="e.g 3 -12 1/2 -4^3 3x x+5" [formControl]="expressionControl">
+<mat-form-field>
+    <input type="text" matInput placeholder="e.g 3 -12 1/2 -4^3 3x x+5" [formControl]="expressionControl">
+</mat-form-field>
+<app-tex *ngIf="previewTex" [tex]="previewTex"></app-tex>
 <mat-list>
     <mat-list-item *ngFor="let option of options">
         <button mat-button (click)="onPick(option)">
