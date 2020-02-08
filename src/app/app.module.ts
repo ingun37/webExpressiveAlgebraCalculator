@@ -10,6 +10,7 @@ import { MatrixComponent } from './matrix/matrix.component';
 import { CellComponent } from './cell/cell.component';
 import { ApplyComponent } from './apply/apply.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     BrowserModule,
     BrowserAnimationsModule,
     MatCardModule,
-    MatDialogModule
+    MatDialogModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent],
