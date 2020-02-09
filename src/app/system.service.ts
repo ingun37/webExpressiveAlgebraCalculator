@@ -13,8 +13,23 @@ import Sequence, {
   providedIn: 'root'
 })
 export class SystemService {
-  vars:[string, Exp][] = [["X", sampleY]]
-  main:Exp = sampleMat
+  private vars:[string, Exp][] = [["X", sampleY]]
+  get variables() {
+    return this.vars
+  }
+  addVariable() {
+    let newVarName = this.unusedVar
+    this.vars = this.vars.concat([
+      [newVarName, new Var(newVarName)]
+    ])
+  }
+  private main:Exp = sampleMat
+  get mainExp():Exp {
+    return this.main
+  }
+  setMainExp(exp:Exp) {
+    this.main = exp
+  }
   get usedVars():string[] {
     let ofMain = usedVars(this.main)
     let ofVars = flatMap(this.vars.map(pair=>pair[1]), x=>usedVars(x))

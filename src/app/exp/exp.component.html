@@ -1,18 +1,19 @@
 <mat-card>
     <button mat-raised-button (click)="onTexClick()">
-        <app-tex [tex]="lineage.exp.latex"></app-tex>
+        <app-tex [tex]="_lineage.exp.latex"></app-tex>
     </button>
-    <div class="container">
-        <div *ngIf="mat; else elseBlock">
-            <app-matrix [mat]="mat" (cellClick)="onCellClick($event)"></app-matrix>
-        </div>
-        <ng-template #elseBlock>
-
+    <div *ngIf="mat; else elseBlock">
+        <app-matrix [mat]="mat" (cellClick)="onCellClick($event)"></app-matrix>
+    </div>
+    <ng-template #elseBlock>
+        
+        
+        <div class="container">
             <app-exp class="item" *ngFor="let kid of exp.kids; index as idx" [lineage]="makeLineageForKid(idx)"
                 (changed)="onKidChanged(idx, $event)"></app-exp>
+            </div>
 
         </ng-template>
 
 
-    </div>
 </mat-card>

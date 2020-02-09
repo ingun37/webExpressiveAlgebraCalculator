@@ -10,22 +10,23 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class AppComponent {
   mainChanged(to:Exp) {
-    this.system.main = to
+    this.system.setMainExp(to)
+
     // this.rootLineage = new Lineage([], this.system.main)
   }
   get vars():[string, Exp][] {
-    return this.system.vars
+    return this.system.variables
   }
   get rootLineage():Lineage {
-    return new Lineage([], this.system.main)
+    return new Lineage([], this.system.mainExp)
   }
   get resultTex():string {
     try {
-      let substituded = this.system.vars.reduce((l,r)=>{
+      let substituded = this.system.variables.reduce((l,r)=>{
         let varname = r[0]
         let varexp = r[1]
         return changed(l, new Var(varname), varexp)
-      }, this.system.main)
+      }, this.system.mainExp)
       return "= " + substituded.eval().latex
     } catch (error) {
       return "\\text{Invalid Expression}"
@@ -41,4 +42,7 @@ export class AppComponent {
     // this.rootLineage = new Lineage([], this.system.main)
   }
 
+  addVar() {
+    this.system.addVariable()
+  }
 }

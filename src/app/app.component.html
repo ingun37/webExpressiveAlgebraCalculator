@@ -1,5 +1,5 @@
 <mat-toolbar-row>
-    <button mat-button>Add Variable</button>
+    <button mat-button (click)="addVar()">Add Variable</button>
 </mat-toolbar-row>
 <div class="container">
     <app-exp [lineage]="rootLineage" (changed)="mainChanged($event)"></app-exp>

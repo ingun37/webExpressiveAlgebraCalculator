@@ -1,9 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Input } from '@angular/core';
 import * as E from '../exp';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplyComponent } from '../apply/apply.component';
 import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-exp',
@@ -11,14 +12,19 @@ import { Observable } from 'rxjs';
   styleUrls: ['./exp.component.scss']
 })
 export class ExpComponent implements OnInit {
-  @Input() lineage: E.Lineage;
+  _lineage:E.Lineage
+  @Input()
+  set lineage(l:E.Lineage) {
+    this._lineage = l
+    
+  }
   @Output() changed = new EventEmitter<E.Exp>(); 
   get exp():E.Exp {
-    return this.lineage.exp
+    return this._lineage.exp
   }
   get mat():E.Matrix {
-    if (this.lineage.exp instanceof E.Matrix) {
-      return this.lineage.exp as E.Matrix
+    if (this._lineage.exp instanceof E.Matrix) {
+      return this._lineage.exp as E.Matrix
     }
     return null
   }
@@ -36,7 +42,7 @@ export class ExpComponent implements OnInit {
   }
 
   onTexClick() {
-    this.openDialogFor(this.lineage).then(newExp => {
+    this.openDialogFor(this._lineage).then(newExp => {
       this.changed.emit(newExp)
     })
   }
@@ -58,10 +64,10 @@ export class ExpComponent implements OnInit {
   }
 
   makeLineageForKid(kidIdx:number): E.Lineage {
-    let thisExp = this.lineage.exp
-    let kidExp = this.lineage.exp.kids[kidIdx]
+    let thisExp = this._lineage.exp
+    let kidExp = this._lineage.exp.kids[kidIdx]
     let newLine:[E.Exp, number] = [thisExp, kidIdx]
-    return new E.Lineage(this.lineage.chain.concat([newLine])  , kidExp)
+    return new E.Lineage(this._lineage.chain.concat([newLine])  , kidExp)
   }
 
   onKidChanged(kidIdx:number, newKidExp:E.Exp) {
