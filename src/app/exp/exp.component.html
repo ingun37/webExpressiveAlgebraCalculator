@@ -3,7 +3,7 @@
         <app-tex [tex]="_lineage.exp.latex"></app-tex>
     </button>
     <div *ngIf="mat; else elseBlock">
-        <app-matrix [mat]="mat" (cellClick)="onCellClick($event)"></app-matrix>
+        <app-matrix [mat]="mat" (cellClick)="onCellClick($event)" (resized)="onMatrixResize($event)"></app-matrix>
     </div>
     <ng-template #elseBlock>
         

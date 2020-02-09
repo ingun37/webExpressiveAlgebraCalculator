@@ -4,6 +4,7 @@ import * as E from '../exp';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplyComponent } from '../apply/apply.component';
 import { Observable } from 'rxjs';
+import { range } from 'sequency';
 
 
 @Component({
@@ -80,4 +81,31 @@ export class ExpComponent implements OnInit {
     }))
     this.changed.emit(newMe)
   }
+
+  onMatrixResize(size:[number, number]) {
+    let row = size[0]
+    let col = size[1]
+    let mat = this.mat
+    let newElements = range(0, row-1, 1).map(r=>{
+      return range(0, col-1, 1).map((c):E.Exp=>{
+        if (r < mat.elements.length && c < mat.elements[0].length) {
+          return mat.elements[r][c]
+        } else {
+          return new E.Scalar(0)
+        }
+      }).toArray()
+    }).toArray()
+    this.changed.emit(new E.Matrix(newElements))
+  }
 }
+/*
+-  onHandleMove(event: { pointerPosition: { x: number, y: number } }) {
+-    let box = this.tbl.nativeElement.getBoundingClientRect()
+-    // console.log(this.tbl.nativeElement.offsetTop)
+-    this.highbox.nativeElement.style.top = `${this.tbl.nativeElement.offsetTop}px`
+-    this.highbox.nativeElement.style.left = `${this.tbl.nativeElement.offsetLeft}px`
+-    this.highbox.nativeElement.style.width = `${event.pointerPosition.x - box.left}px`
+-    this.highbox.nativeElement.style.height = `${event.pointerPosition.y - box.top}px`
+-    // console.log(event.pointerPosition)
+-  }
+*/

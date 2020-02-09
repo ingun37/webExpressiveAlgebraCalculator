@@ -10,8 +10,8 @@
         </tr>
     </table>
 </div>
-<div #highlightbox class="highlighted">
+<div *ngIf="moving | async" #highlightbox class="highlighted">
     <div *ngFor="let vert of verts | async" class="vertDivision" [ngStyle]="{'left':vert.pos.toString() + 'px', 'height': vert.length.toString() + 'px'}"></div>
     <div *ngFor="let hori of horis | async" class="horiDivision" [ngStyle]="{'top':hori.pos.toString() + 'px', 'width': hori.length.toString() + 'px'}"></div>
 </div>
-<div #handle class="example-box" cdkDrag (cdkDragMoved)="onHandleMove($event)"></div>
+<div #handle class="example-box" cdkDrag ></div>
