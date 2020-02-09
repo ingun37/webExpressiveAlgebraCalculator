@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {sampleMat, Lineage, Exp, sampleX, Var, changed} from './exp'
-import { SystemService } from './system.service';
+import { SystemService, NamedVar } from './system.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 @Component({
@@ -14,7 +14,7 @@ export class AppComponent {
 
     // this.rootLineage = new Lineage([], this.system.main)
   }
-  get vars():[string, Exp][] {
+  get vars():NamedVar[] {
     return this.system.variables
   }
   get rootLineage():Lineage {
@@ -23,8 +23,8 @@ export class AppComponent {
   get resultTex():string {
     try {
       let substituded = this.system.variables.reduce((l,r)=>{
-        let varname = r[0]
-        let varexp = r[1]
+        let varname = r.name
+        let varexp = r.exp
         return changed(l, new Var(varname), varexp)
       }, this.system.mainExp)
       return "= " + substituded.eval().latex

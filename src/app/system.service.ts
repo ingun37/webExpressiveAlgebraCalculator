@@ -8,19 +8,21 @@ import Sequence, {
   generateSequence,
   extendSequence
 } from 'sequency';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemService {
-  private vars:[string, Exp][] = [["X", sampleY]]
+  public varsOb = new Subject<NamedVar[]>()
+  private vars:NamedVar[] = [new NamedVar("X", sampleY)]
   get variables() {
     return this.vars
   }
   addVariable() {
     let newVarName = this.unusedVar
     this.vars = this.vars.concat([
-      [newVarName, new Var(newVarName)]
+      new NamedVar(newVarName, new Var(newVarName))
     ])
   }
   private main:Exp = sampleMat
@@ -32,8 +34,8 @@ export class SystemService {
   }
   get usedVars():string[] {
     let ofMain = usedVars(this.main)
-    let ofVars = flatMap(this.vars.map(pair=>pair[1]), x=>usedVars(x))
-    let varNames = this.vars.map(v=>v[0])
+    let ofVars = flatMap(this.vars.map(pair=>pair.exp), x=>usedVars(x))
+    let varNames = this.vars.map(v=>v.name)
     return ofMain.concat(ofVars, varNames)
   }
   get unusedVar():string {
@@ -43,8 +45,8 @@ export class SystemService {
   constructor() { }
   updateVar(name:string, e:Exp) {
     this.vars = this.vars.map(pair=>{
-      if(pair[0] == name) {
-        return [name,e]
+      if(pair.name == name) {
+        return new NamedVar(name,e)
       } else {
         return pair
       }
@@ -74,7 +76,12 @@ function freeMonoid(): Sequence<string> {
   }).flatten()
 }
 
-
+export class NamedVar{
+  constructor(
+    public name:string,
+    public exp:Exp
+  ) {}
+}
 
 
 
