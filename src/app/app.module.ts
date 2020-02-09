@@ -18,6 +18,7 @@ import {MatInputModule} from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { stateReducer } from './reducers';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { stateReducer } from './reducers';
     MatButtonModule,
     MatInputModule,
     ReactiveFormsModule,
-    StoreModule.forRoot({ state: stateReducer })
+    StoreModule.forRoot({ state: stateReducer }),
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent],
