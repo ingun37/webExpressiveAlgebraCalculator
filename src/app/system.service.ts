@@ -16,31 +16,23 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class SystemService {
   private initialVars = [new NamedVar("X", sampleY)]
   public vars$ = new BehaviorSubject<NamedVar[]>(this.initialVars)
-  private vars:NamedVar[] = this.initialVars
-  get variables() {
-    return this.vars
-  }
+
   addVariable() {
     let newVarName = this.unusedVar
-    this.vars = this.vars.concat([
+    this.vars$.next(this.vars$.value.concat([
       new NamedVar(newVarName, new Var(newVarName))
-    ])
-    this.vars$.next(this.vars)
+    ]))
   }
   private initialMain =  sampleMat
   public main$ = new BehaviorSubject<Exp>(this.initialMain)
-  private main:Exp = this.initialMain
-  get mainExp():Exp {
-    return this.main
-  }
+  
   setMainExp(exp:Exp) {
-    this.main = exp
     this.main$.next(exp)
   }
   get usedVars():string[] {
-    let ofMain = usedVars(this.main)
-    let ofVars = flatMap(this.vars.map(pair=>pair.exp), x=>usedVars(x))
-    let varNames = this.vars.map(v=>v.name)
+    let ofMain = usedVars(this.main$.value)
+    let ofVars = flatMap(this.vars$.value.map(pair=>pair.exp), x=>usedVars(x))
+    let varNames = this.vars$.value.map(v=>v.name)
     return ofMain.concat(ofVars, varNames)
   }
   get unusedVar():string {
@@ -49,14 +41,13 @@ export class SystemService {
   }
   constructor() { }
   updateVar(name:string, e:Exp) {
-    this.vars = this.vars.map(pair=>{
+    this.vars$.next(this.vars$.value.map(pair=>{
       if(pair.name == name) {
         return new NamedVar(name,e)
       } else {
         return pair
       }
-    })
-    this.vars$.next(this.vars)
+    }))
   }
 }
 function usedVars(e:Exp):string[] {
