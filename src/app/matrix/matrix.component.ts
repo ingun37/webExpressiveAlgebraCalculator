@@ -28,30 +28,53 @@ export class MatrixComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    let loc = this.handle.moved.pipe(
+    
+    let info = this.handle.moved.pipe(
       map((x: { pointerPosition: { x: number, y: number } }) => {
         return x.pointerPosition
-      }))
-    this.rows = loc.pipe(
-      map(loc => {
-        let box = this.tbl.nativeElement.getBoundingClientRect()
-        let boxwidth = box.width
-        let cellWidth = Math.floor(boxwidth / this.mat.elements[0].length)
-        let previewWidth = loc.x - box.left
-        let rownum = Math.floor(previewWidth / cellWidth)
-        return range(1, rownum, 1).map(x => `${x * cellWidth}px`).toArray()
-      })
-    )
-    this.cols = loc.pipe(
+      }),
       map(loc => {
         let box = this.tbl.nativeElement.getBoundingClientRect()
         let boxheight = box.height
+        let boxwidth = box.width
         let cellheight = Math.floor(boxheight / this.mat.elements.length)
+        let cellWidth = Math.floor(boxwidth / this.mat.elements[0].length)
+
+        let previewWidth = loc.x - box.left
         let previewheight = loc.y - box.top
-        let colnum = Math.floor(previewheight / cellheight)
-        return range(1, colnum, 1).map(x => `${x * cellheight}px`).toArray()
+        let horinum = Math.floor(previewheight / cellheight)
+        let vertnum = Math.floor(previewWidth / cellWidth)
+        return { previewWidth, previewheight, vertnum, horinum, cellheight, cellWidth }
+      })
+    );
+
+    this.verts = info.pipe(
+      map(info => {
+        if (info.vertnum == 0) {
+          return []
+        }
+        return range(1, info.vertnum, 1).map(x => new Divisor(info.cellheight * info.horinum, x * info.cellWidth)).toArray()
       })
     )
+    this.horis = info.pipe(
+      map(info => {
+        if (info.horinum == 0) {
+          return []
+        }
+        return range(1, info.horinum, 1).map(x => new Divisor(info.cellWidth * info.vertnum, info.cellheight * x)).toArray()
+      })
+    )
+
+    // this.rows = ctx.pipe(
+    //   map(info => {
+    //     return range(1, rownum, 1).map(x => `${x * cellWidth}px`).toArray())
+    //   })
+    // )
+    // this.cols = ctx.pipe(
+    //   map(loc => {
+    //     return range(1, colnum, 1).map(x => new Divisor(`${rownum * cellheight}px`, `${x * cellheight}px`)).toArray()
+    //   })
+    // )
   }
   onCellClick(ridx: number, cidx: number) {
     this.cellClick.emit([ridx, cidx])
@@ -60,8 +83,8 @@ export class MatrixComponent implements OnInit {
   @ViewChild("tbl", { static: false }) tbl: ElementRef;
   @ViewChild("highlightbox", { static: false }) highbox: ElementRef;
 
-  rows: Observable<string[]>
-  cols: Observable<string[]>
+  horis: Observable<Divisor[]>
+  verts: Observable<Divisor[]>
 
   onHandleMove(event: { pointerPosition: { x: number, y: number } }) {
     let box = this.tbl.nativeElement.getBoundingClientRect()
@@ -72,6 +95,13 @@ export class MatrixComponent implements OnInit {
     this.highbox.nativeElement.style.height = `${event.pointerPosition.y - box.top}px`
     // console.log(event.pointerPosition)
   }
+}
+
+class Divisor {
+  constructor(
+    public length: number,
+    public pos: number
+  ) { }
 }
 // [Log] DOMRect (main.js, line 1035)
 

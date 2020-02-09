@@ -11,7 +11,7 @@
     </table>
 </div>
 <div #highlightbox class="highlighted">
-    <div *ngFor="let row of rows | async" class="rowDivision" [ngStyle]="{'left':row}"></div>
-    <div *ngFor="let col of cols | async" class="colDivision" [ngStyle]="{'top':col}"></div>
+    <div *ngFor="let vert of verts | async" class="vertDivision" [ngStyle]="{'left':vert.pos.toString() + 'px'}"></div>
+    <div *ngFor="let hori of horis | async" class="horiDivision" [ngStyle]="{'top':hori.pos.toString() + 'px'}"></div>
 </div>
 <div #handle class="example-box" cdkDrag (cdkDragMoved)="onHandleMove($event)"></div>
