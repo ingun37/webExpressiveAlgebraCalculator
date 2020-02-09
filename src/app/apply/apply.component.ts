@@ -32,22 +32,26 @@ export class ApplyComponent implements OnInit {
     let exp = this.lineage.exp
     let unusedVar = system
   }
-  previewTex:string = null
   ngOnInit() {
     this.expressionControl.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(n=>{
       let e = evaluateExpression(n)
       if(e) {
-        this.previewTex = e.latex
       } else {
-        this.previewTex = null
+        this.expressionControl.setErrors({invalidExpression:true})
       }
     })
   }
 
   onPick(option:Option) {
     this.dialogRef.close(option.original)
+  }
+  onEval() {
+    let e = evaluateExpression(this.expressionControl.value)
+    if(e) {
+      this.dialogRef.close(e)
+    }
   }
 }
 

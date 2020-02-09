@@ -1,7 +1,14 @@
+<h3>Custom Expression</h3>
 <mat-form-field>
+    <mat-label>Write an expression</mat-label>
     <input type="text" matInput placeholder="e.g 3 -12 1/2 -4^3 3x x+5" [formControl]="expressionControl">
+    <mat-error *ngIf="expressionControl.invalid">
+        Invalid Expression
+    </mat-error>
 </mat-form-field>
-<app-tex *ngIf="previewTex" [tex]="previewTex"></app-tex>
+<button mat-button (click)="onEval()">Evaluate</button>
+
+<h3>..Or Pick One</h3>
 <mat-list>
     <mat-list-item *ngFor="let option of options">
         <button mat-button (click)="onPick(option)">
