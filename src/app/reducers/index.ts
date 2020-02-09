@@ -23,13 +23,15 @@ export class NamedVar{
 export class AppState {
   constructor(
     public main:Exp,
-    public vars:NamedVar[]
+    public vars:NamedVar[],
+    public prev:AppState
   ) {}
 }
 
 export const updateMain = createAction("[Main Component] Update", props<{exp:Exp}>())
 export const updateVars = createAction("[Vars Component] Update", props<{var:NamedVar}>())
 export const addVars = createAction("[Vars Component] Add", props<{var:NamedVar}>())
+export const undoAction = createAction("[State Component] Undo")
 
 const n1 = new Scalar(1)
 const n0 = new Scalar(0)
@@ -38,10 +40,11 @@ const vZ = new Var("Z")
 const sampleAdd = new Add(n1, n0)
 const initialMain = new Add(vZ, new Matrix([[n1, vA], [sampleAdd, n1]]))
 const initialVars = [new NamedVar("X", new Var("Y"))]
+const initialState = new AppState(initialMain, initialVars, null)
 
-const _stateReducer = createReducer(new AppState(initialMain, initialVars),
+const _stateReducer = createReducer(initialState,
   on(updateMain, (state, prop) => {
-    return new AppState(prop.exp, state.vars)
+    return new AppState(prop.exp, state.vars, state)
   }),
   on(updateVars, (state, prop) => {
     return new AppState(state.main, state.vars.map(x=>{
@@ -50,11 +53,18 @@ const _stateReducer = createReducer(new AppState(initialMain, initialVars),
       } else {
         return x
       }
-    }))
+    }), state)
   }),
   on(addVars, (state, prop)=>{
-    return new AppState(state.main, state.vars.concat([prop.var]))
+    return new AppState(state.main, state.vars.concat([prop.var]), state)
   }),
+  on(undoAction, (state) => {
+    if (state.prev) {
+      return state.prev
+    } else {
+      return initialState
+    }
+  })
 );
 
 export function stateReducer(state, action) {

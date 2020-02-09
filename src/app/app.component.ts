@@ -48,4 +48,8 @@ export class AppComponent {
   addVar() {
     this.system.addVariable()
   }
+
+  onUndo() {
+    this.system.undo()
+  }
 }

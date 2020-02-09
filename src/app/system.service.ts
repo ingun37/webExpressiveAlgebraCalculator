@@ -10,7 +10,7 @@ import Sequence, {
 } from 'sequency';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { createAction, createReducer, on, props, Store, select } from '@ngrx/store';
-import { AppState, addVars, updateMain, selectUnusedVar, updateVars, NamedVar } from './reducers';
+import { AppState, addVars, updateMain, selectUnusedVar, updateVars, NamedVar, undoAction } from './reducers';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -41,6 +41,9 @@ export class SystemService {
   constructor(private store:Store<{state:AppState}>) { }
   updateVar(name:string, e:Exp) {
     this.store.dispatch(updateVars({var: new NamedVar(name,e)}))
+  }
+  undo() {
+    this.store.dispatch(undoAction())
   }
 }
 
