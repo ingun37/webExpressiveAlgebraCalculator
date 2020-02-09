@@ -10,7 +10,7 @@
 
 <h3>..Or Pick One</h3>
 <mat-list>
-    <mat-list-item *ngFor="let option of options">
+    <mat-list-item *ngFor="let option of options | async">
         <button mat-button (click)="onPick(option)">
             <app-tex [tex]="option.show.latex"></app-tex>
         </button>

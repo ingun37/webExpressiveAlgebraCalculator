@@ -17,7 +17,7 @@ import { VarComponent } from './var/var.component';
 import {MatInputModule} from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
+import { stateReducer } from './reducers';
 
 @NgModule({
   declarations: [
@@ -39,13 +39,7 @@ import { reducers, metaReducers } from './reducers';
     MatButtonModule,
     MatInputModule,
     ReactiveFormsModule,
-    StoreModule.forRoot(reducers, {
-      metaReducers,
-      runtimeChecks: {
-        strictStateImmutability: true,
-        strictActionImmutability: true
-      }
-    })
+    StoreModule.forRoot({ state: stateReducer })
   ],
   providers: [],
   bootstrap: [AppComponent],

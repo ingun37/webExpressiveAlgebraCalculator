@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import {sampleMat, Lineage, Exp, sampleX, Var, changed} from './exp'
-import { SystemService, NamedVar } from './system.service';
+import { Lineage, Exp,  Var, changed} from './exp'
+import { SystemService } from './system.service';
 import { Observable, of, combineLatest } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { NamedVar } from './reducers';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

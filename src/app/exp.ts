@@ -114,14 +114,7 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
     return Array.prototype.concat(...array.map(callbackfn));
 }
 
-let n1 = new Scalar(1)
-let n0 = new Scalar(0)
-let vA = new Var("A")
-let vZ = new Var("Z")
-let sampleAdd = new Add(n1, n0)
-export let sampleMat = new Add(vZ, new Matrix([[n1, vA], [sampleAdd, n1]]))
-export let sampleX = new Var("X")
-export let sampleY = new Var("Y")
+
 export function changed(e:Exp, from:Exp, to:Exp): Exp {
     if (e.isEq(from)) {
         return to

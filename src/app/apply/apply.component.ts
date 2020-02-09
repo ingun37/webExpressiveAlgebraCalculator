@@ -4,7 +4,7 @@ import { Lineage, Exp, Add, Var, Scalar } from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { debounce, debounceTime } from 'rxjs/operators';
+import { debounce, debounceTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-apply',
@@ -15,14 +15,16 @@ export class ApplyComponent implements OnInit {
   expressionControl = new FormControl('', []);
 
   lineage: Lineage
-  get options(): Option[] {
-    let exp = this.lineage.exp
-    let unusedVar = this.system.unusedVar
-    let availables:Exp[] = [
-      new Add(exp, new Var(unusedVar))
-    ]
-    return availables.map(x=>new Option(x, x))
-  }
+  options:Observable<Option[]> = this.system.unusedVar.pipe(
+    map(varname=>{
+      let exp = this.lineage.exp
+      let unusedVar = this.system.unusedVar
+      let availables:Exp[] = [
+        new Add(exp, new Var(varname))
+      ]
+      return availables.map(x=>new Option(x, x))
+    })
+  )
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ApplyComponent>,
