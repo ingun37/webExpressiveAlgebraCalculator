@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Input, Directive } from '@angular/core';
 import katex from 'katex';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-tex',
@@ -8,7 +9,7 @@ import katex from 'katex';
   styleUrls: ['./tex.component.scss']
 })
 export class TexComponent implements OnInit {
-  _tex:string = ""
+  _tex:string = null
   @Input()
   set tex(tex: string) {
     this._tex = tex
@@ -21,15 +22,17 @@ export class TexComponent implements OnInit {
         output: "mathml"
       });
     }
-  } 
+  }
+
   @ViewChild("texview", {static: false}) texview: ElementRef;
 
-  constructor() { }
-
+  constructor() {
+  }
+  
   ngOnInit() {
     
   }
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     this.renderMath()
   }
 }

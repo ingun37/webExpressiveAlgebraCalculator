@@ -14,8 +14,9 @@ import { BehaviorSubject, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class SystemService {
-  public varsOb = new Subject<NamedVar[]>()
-  private vars:NamedVar[] = [new NamedVar("X", sampleY)]
+  private initialVars = [new NamedVar("X", sampleY)]
+  public vars$ = new BehaviorSubject<NamedVar[]>(this.initialVars)
+  private vars:NamedVar[] = this.initialVars
   get variables() {
     return this.vars
   }
@@ -24,13 +25,17 @@ export class SystemService {
     this.vars = this.vars.concat([
       new NamedVar(newVarName, new Var(newVarName))
     ])
+    this.vars$.next(this.vars)
   }
-  private main:Exp = sampleMat
+  private initialMain =  sampleMat
+  public main$ = new BehaviorSubject<Exp>(this.initialMain)
+  private main:Exp = this.initialMain
   get mainExp():Exp {
     return this.main
   }
   setMainExp(exp:Exp) {
     this.main = exp
+    this.main$.next(exp)
   }
   get usedVars():string[] {
     let ofMain = usedVars(this.main)
@@ -51,6 +56,7 @@ export class SystemService {
         return pair
       }
     })
+    this.vars$.next(this.vars)
   }
 }
 function usedVars(e:Exp):string[] {
