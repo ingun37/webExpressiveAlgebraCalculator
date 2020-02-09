@@ -52,4 +52,7 @@ export class AppComponent {
   onUndo() {
     this.system.undo()
   }
+  onClear() {
+    this.system.clear()
+  }
 }

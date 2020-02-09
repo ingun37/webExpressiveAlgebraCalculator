@@ -10,8 +10,8 @@ import Sequence, {
 } from 'sequency';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { createAction, createReducer, on, props, Store, select } from '@ngrx/store';
-import { AppState, addVars, updateMain, selectUnusedVar, updateVars, NamedVar, undoAction } from './reducers';
-import { map } from 'rxjs/operators';
+import { AppState, addVars, updateMain, selectUnusedVar, updateVars, NamedVar, undoAction, clearAction } from './reducers';
+import { map, first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -24,11 +24,11 @@ export class SystemService {
   unusedVar = this.store.pipe(select(selectUnusedVar))
   addVariable() {
     this.store.pipe(
-      select(selectUnusedVar)
+      select(selectUnusedVar),
+      first()
       ).subscribe(newName=>{
-
-        this.store.dispatch(addVars({var: new NamedVar(newName, new Var(newName))}))
-      })
+      this.store.dispatch(addVars({var: new NamedVar(newName, new Var(newName))}))
+    })
   }
   public main$ = this.store.pipe(
     map(x=>x.state.main)
@@ -45,13 +45,8 @@ export class SystemService {
   undo() {
     this.store.dispatch(undoAction())
   }
-}
-
-
-
-
-
-function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => U[]): U[] {
-  return Array.prototype.concat(...array.map(callbackfn));
+  clear() {
+    this.store.dispatch(clearAction())
+  }
 }
 

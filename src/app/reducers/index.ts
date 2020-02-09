@@ -32,6 +32,7 @@ export const updateMain = createAction("[Main Component] Update", props<{exp:Exp
 export const updateVars = createAction("[Vars Component] Update", props<{var:NamedVar}>())
 export const addVars = createAction("[Vars Component] Add", props<{var:NamedVar}>())
 export const undoAction = createAction("[State Component] Undo")
+export const clearAction = createAction("[State Component] Clear")
 
 const n1 = new Scalar(1)
 const n0 = new Scalar(0)
@@ -64,6 +65,9 @@ const _stateReducer = createReducer(initialState,
     } else {
       return initialState
     }
+  }),
+  on(clearAction, (state) => {
+    return new AppState(new Var("A"), [], state)
   })
 );
 
@@ -77,30 +81,27 @@ function usedVars(e:Exp):Sequence<string> {
   }
   return asSequence(e.kids).flatMap(kid => usedVars(kid))
 }
-export const selectUsedVar = createSelector(
-  (state:{state:AppState})=>{
-    let a = this.store
+export const selectUsedVar = (state:{state:AppState})=>{
+  let ofMain = usedVars(state.state.main)
+  let ofVars = asSequence(state.state.vars.map(pair=>pair.exp)).flatMap(x=>usedVars(x))
+  let varNames = state.state.vars.map(v=>v.name)
 
-    let ofMain = usedVars(this.main$.value)
-    let ofVars = asSequence(state.state.vars.map(pair=>pair.exp)).flatMap(x=>usedVars(x))
-    let varNames = state.state.vars.map(v=>v.name)
+  return ofMain.toArray().concat(ofVars.toArray(), varNames)
+}
 
-    return ofMain.toArray().concat(ofVars.toArray(), varNames)
-  },
-  (vars) => vars
-);
 export const selectUnusedVar = createSelector(
   selectUsedVar,
   (usedVars:string[])=>{
-    return freeMonoid().filter(name=>usedVars.findIndex(x=> name == x) == -1).first()
+    let name = freeMonoid().filter(name=>usedVars.findIndex(x=> name == x) == -1).first()
+    return name
   }
 );
-function caretesian(xs:string[], ys:string[]): string[] {
-  return asSequence(xs).flatMap(x=> asSequence(ys).map(y=>x.concat(y))).toArray()
+function caretesian(xs:Sequence<string>, ys:Sequence<string>): Sequence<string> {
+  return xs.flatMap(x=> ys.map(y=>x.concat(y)))
 }
 
 function freeMonoid(): Sequence<string> {
-  let gen = asSequence("ABCDEFGHIJKLMNOPQRSTUVWXYZ").toArray()
+  let gen = asSequence("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
   return generateSequence(0, n=>n+1).map(n => {
     var prod = gen
     for (let index = 0; index < n; index++) {
