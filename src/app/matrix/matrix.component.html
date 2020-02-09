@@ -1,11 +1,14 @@
 <!-- <app-row *ngFor="let row of mat.elements" [exps]="row"></app-row> -->
-<table>
-    <tr *ngFor="let row of mat.elements; index as ridx">
-        <td *ngFor="let cell of row; index as cidx">
-            <button mat-raised-button (click)="onCellClick(ridx, cidx)">
-                <app-cell [exp]="cell" ></app-cell>
-            </button>
-        </td>
-    </tr>
-</table>
-<div class="example-box" cdkDrag></div>
+<div #tbl>
+    <table>
+        <tr *ngFor="let row of mat.elements; index as ridx">
+            <td *ngFor="let cell of row; index as cidx">
+                <button mat-raised-button (click)="onCellClick(ridx, cidx)">
+                    <app-cell [exp]="cell" ></app-cell>
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div #highlightbox class="highlighted"></div>
+<div #handle class="example-box" cdkDrag (cdkDragMoved)="onHandleMove($event)"></div>
