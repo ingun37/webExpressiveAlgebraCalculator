@@ -20,25 +20,11 @@ export class NamedVar{
   ) {}
 }
 
-class StateSnapShot {
+export class AppState {
   constructor(
     public main:Exp,
     public vars:NamedVar[]
   ) {}
-}
-export class AppState {
-  history: StateSnapShot[]
-  get head():StateSnapShot {
-    return this.history[this.history.length-1]
-  }
-  get main():Exp {return this.head.main}
-  get vars():NamedVar[] {return this.head.vars}
-  constructor(
-    main:Exp,
-    vars:NamedVar[]
-  ) {
-    this.history = [new StateSnapShot(main, vars)]
-  }
 }
 
 export const updateMain = createAction("[Main Component] Update", props<{exp:Exp}>())
