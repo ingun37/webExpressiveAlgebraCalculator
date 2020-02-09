@@ -34,18 +34,6 @@ export class AppComponent {
     }),
     catchError(()=>"\\text{Invalid Expression}")
   )
-  get resultTex():string {
-    try {
-      let substituded = this.system.variables.reduce((l,r)=>{
-        let varname = r.name
-        let varexp = r.exp
-        return changed(l, new Var(varname), varexp)
-      }, this.system.mainExp)
-      return "= " + substituded.eval().latex
-    } catch (error) {
-      return "\\text{Invalid Expression}"
-    }
-  }
   onVarChanged(name:string, newE:Exp) {
     this.system.updateVar(name, newE)
   }
