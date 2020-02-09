@@ -1,3 +1,7 @@
 .container {
     display: flex;
+    align-items: flex-start;
+}
+.item {
+    margin: 0.2em;
 }

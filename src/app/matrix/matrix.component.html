@@ -2,7 +2,9 @@
 <table>
     <tr *ngFor="let row of mat.elements; index as ridx">
         <td *ngFor="let cell of row; index as cidx">
-            <app-cell [exp]="cell" (click)="onCellClick(ridx, cidx)"></app-cell>
+            <button mat-raised-button (click)="onCellClick(ridx, cidx)">
+                <app-cell [exp]="cell" ></app-cell>
+            </button>
         </td>
     </tr>
 </table>
