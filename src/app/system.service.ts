@@ -26,6 +26,15 @@ export class SystemService {
     return freeMonoid().filter(name=>usedVars.findIndex(x=> name == x) == -1).first()
   }
   constructor() { }
+  updateVar(name:string, e:Exp) {
+    this.vars = this.vars.map(pair=>{
+      if(pair[0] == name) {
+        return [name,e]
+      } else {
+        return pair
+      }
+    })
+  }
 }
 function usedVars(e:Exp):string[] {
   if (e instanceof Var) {

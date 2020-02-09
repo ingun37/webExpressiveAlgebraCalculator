@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Exp, Lineage } from '../exp';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Exp, Lineage, changed } from '../exp';
 
 @Component({
   selector: 'app-var',
@@ -9,6 +9,7 @@ import { Exp, Lineage } from '../exp';
 export class VarComponent implements OnInit {
   @Input() name:string
   @Input() exp:Exp
+  @Output() changed = new EventEmitter<Exp>(); 
 
   get lineage():Lineage {return new Lineage([], this.exp)}
 
@@ -19,6 +20,6 @@ export class VarComponent implements OnInit {
   }
 
   onChange(newE:Exp) {
-    console.log('var changed!')
+    this.changed.emit(newE)
   }
 }

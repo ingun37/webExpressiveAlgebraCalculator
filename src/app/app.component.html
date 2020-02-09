@@ -3,6 +3,6 @@
 </mat-toolbar-row>
 <div class="container">
     <app-exp [lineage]="rootLineage" (changed)="mainChanged($event)"></app-exp>
-    <app-var *ngFor="let pair of vars" [name]="pair[0]" [exp]="pair[1]"></app-var>
+    <app-var *ngFor="let pair of vars" [name]="pair[0]" [exp]="pair[1]" (changed)="onVarChanged(pair[0], $event)"></app-var>
 </div>
 <app-tex [tex]="resultTex"></app-tex>

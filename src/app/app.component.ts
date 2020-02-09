@@ -31,6 +31,9 @@ export class AppComponent {
       return "\\text{Invalid Expression}"
     }
   }
+  onVarChanged(name:string, newE:Exp) {
+    this.system.updateVar(name, newE)
+  }
   title = 'calc';
   constructor (
     private system:SystemService
