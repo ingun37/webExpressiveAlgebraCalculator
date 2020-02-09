@@ -8,9 +8,13 @@ export interface Exp {
     latex: string
     kids: Exp[]
     clone(newKids:Exp[]): Exp;
+    eval(): Exp;
 }
 
 export class Scalar implements Exp {
+    eval(): Exp {
+        return this
+    }
     get latex(): string {return `${this.n}`}
     get kids(): Exp[] { return [] }
     clone(newKids:Exp[]): Exp {return this}
@@ -19,6 +23,9 @@ export class Scalar implements Exp {
     ) {}
 }
 export class Add implements Exp {
+    eval(): Exp {
+        return this
+    }
     get latex(): string {
         return this.l.latex + " + " + this.r.latex
     }
@@ -35,6 +42,9 @@ export class Add implements Exp {
 }
 
 export class Matrix implements Exp {
+    eval(): Exp {
+        return this
+    }
     get latex(): string {
         let inner = this.elements.map((row) => {
             return row.map(e => `{${e.latex}}` ).join(" & ")
@@ -59,6 +69,9 @@ export class Matrix implements Exp {
 }
 
 export class Var implements Exp {
+    eval(): Exp {
+        return this
+    }
     constructor (
         public name:string
     ) {}
