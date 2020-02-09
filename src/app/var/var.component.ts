@@ -18,4 +18,7 @@ export class VarComponent implements OnInit {
     
   }
 
+  onChange(newE:Exp) {
+    console.log('var changed!')
+  }
 }
