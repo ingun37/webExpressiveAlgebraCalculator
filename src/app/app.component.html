@@ -2,7 +2,7 @@
     <button mat-button (click)="addVar()">Add Variable</button>
 </mat-toolbar-row>
 <div class="container">
-    <app-exp [lineage]="rootLineage" (changed)="mainChanged($event)"></app-exp>
-    <app-var *ngFor="let pair of vars" [name]="pair.name" [exp]="pair.exp" (changed)="onVarChanged(pair.name, $event)"></app-var>
+    <app-exp [lineage]="rootLineage | async" (changed)="mainChanged($event)"></app-exp>
+    <app-var *ngFor="let pair of vars | async" [name]="pair.name" [exp]="pair.exp" (changed)="onVarChanged(pair.name, $event)"></app-var>
 </div>
 <app-tex [tex]="result | async"></app-tex>

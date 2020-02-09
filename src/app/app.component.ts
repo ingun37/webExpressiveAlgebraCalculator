@@ -14,12 +14,13 @@ export class AppComponent {
 
     // this.rootLineage = new Lineage([], this.system.main)
   }
-  get vars():NamedVar[] {
-    return this.system.variables
-  }
-  get rootLineage():Lineage {
-    return new Lineage([], this.system.mainExp)
-  }
+  vars = this.system.vars$
+  rootLineage = this.system.main$.pipe(
+    map(x => new Lineage([], x))
+  )
+  // get rootLineage():Lineage {
+  //   return new Lineage([], this.system.mainExp)
+  // }
   result = combineLatest(this.system.vars$, this.system.main$.pipe(map(x=>[new NamedVar('',x)]))).pipe(
     map(tup=>{
       let vars = tup[0]
