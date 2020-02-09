@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { sampleMat, sampleX, Exp, Var } from './exp';
+import { sampleMat, sampleX, Exp, Var, sampleY } from './exp';
 import Sequence, {
   asSequence,
   sequenceOf, 
@@ -13,7 +13,7 @@ import Sequence, {
   providedIn: 'root'
 })
 export class SystemService {
-  vars:[string, Exp][] = [["X", sampleX]]
+  vars:[string, Exp][] = [["X", sampleY]]
   main:Exp = sampleMat
   get usedVars():string[] {
     let ofMain = usedVars(this.main)

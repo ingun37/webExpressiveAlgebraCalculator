@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {sampleMat, Lineage, Exp, sampleX, Var} from './exp'
+import {sampleMat, Lineage, Exp, sampleX, Var, changed} from './exp'
 import { SystemService } from './system.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -21,7 +21,12 @@ export class AppComponent {
   }
   get resultTex():string {
     try {
-      return "= " + this.system.main.eval().latex
+      let substituded = this.system.vars.reduce((l,r)=>{
+        let varname = r[0]
+        let varexp = r[1]
+        return changed(l, new Var(varname), varexp)
+      }, this.system.main)
+      return "= " + substituded.eval().latex
     } catch (error) {
       return "\\text{Invalid Expression}"
     }
