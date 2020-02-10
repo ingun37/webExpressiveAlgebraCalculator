@@ -1,5 +1,4 @@
-import { sequenceOf, asSequence } from 'sequency'
-import { flatAdd, addXs } from './exp-extension'
+import Sequence, { sequenceOf, asSequence, range } from 'sequency'
 
 export class Lineage {
     constructor(
@@ -124,3 +123,53 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
 }
 
 
+function add2(l:Exp, r:Exp): Exp {
+    console.log(l, r)
+    if (l instanceof Scalar && r instanceof Scalar) {
+        return new Scalar(l.n + r.n)
+    }
+    if (l instanceof Matrix && r instanceof Matrix) {
+        if (l.elements.length == r.elements.length && l.elements[0].length == r.elements[0].length) {
+            let e = asSequence(l.elements).zip(asSequence(r.elements)).map(([lr,rr])=>{
+                return asSequence(lr).zip(asSequence(rr)).map(([x,y])=>{
+                    return new Add(x,y).eval()
+                }).toArray()
+            }).toArray()
+            return new Matrix(e)
+        }
+    }
+    return null
+}
+
+
+function rng(n:number): Sequence<number> {
+    return range(0, n-1, 1)
+}
+function addXs(head:Exp, tail:Exp[]): Exp {
+    if(tail.length == 0) {
+        return head
+    }
+    let exps = asSequence(tail).plus(head).toArray()
+    let len = exps.length
+    let combi2 = rng(len).flatMap(n=>{
+        return rng(len).filter(m=>m!=n).map((m):[number, number]=>[n,m])
+    })
+
+    let tailed = combi2.map(([m,n]):[Exp,Sequence<Exp>]=>[add2(exps[m],exps[n]), rng(len).filter(x=>x!=m && x!=n).map(x=>exps[x])])
+    let f = tailed.firstOrNull(([x,tail])=>x!=null)
+    if(f) {
+        return addXs(f[0], f[1].toArray())
+    } else {
+        return tail.reduce((l,r)=>new Add(l,r),head)
+    }
+}
+
+function flatAdd(add:Add): Sequence<Exp> {
+    return asSequence(add.kids).flatMap(k => {
+        if (k instanceof Add) {
+            return flatAdd(k)
+        } else {
+            return sequenceOf(k)
+        }
+    })
+}

@@ -16,7 +16,7 @@ export class TexComponent implements OnInit {
     this.renderMath()
   }
   renderMath() {
-    if (this.texview) {
+    if (this.texview && this._tex) {
       katex.render(this._tex, this.texview.nativeElement, {
         throwOnError: false,
         output: "mathml"

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Lineage, Exp,  Var, Add, Matrix, Scalar} from './exp'
 import { SystemService } from './system.service';
 import { Observable, of, combineLatest } from 'rxjs';
-import { catchError, map, first } from 'rxjs/operators';
+import { catchError, map, first, debounceTime } from 'rxjs/operators';
 import { NamedVar } from './reducers';
 import { asSequence } from 'sequency';
 @Component({
@@ -31,6 +31,7 @@ export class AppComponent {
   //   return new Lineage([], this.system.mainExp)
   // }
   result = combineLatest(this.system.vars$, this.system.main$.pipe(map(x=>[new NamedVar('',x)]))).pipe(
+    debounceTime(50),
     map(tup=>{
       let vars = tup[0]
       let main = tup[1][0].exp
