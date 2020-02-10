@@ -4,7 +4,7 @@ import * as E from '../exp';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplyComponent } from '../apply/apply.component';
 import { Observable } from 'rxjs';
-import { range } from 'sequency';
+import { range, asSequence } from 'sequency';
 
 
 @Component({
@@ -17,9 +17,18 @@ export class ExpComponent implements OnInit {
   @Input()
   set lineage(l:E.Lineage) {
     this._lineage = l
-    
+
+    if (this.exp instanceof E.Add) {
+      this.subviewLineages = associativeKidsOfAdd(l)
+    } else {
+      this.subviewLineages = this.exp.kids.map((x,i)=>this.makeLineageForKid(i))
+    }
   }
+
+  subviewLineages:E.Lineage[] 
+
   @Output() changed = new EventEmitter<E.Lineage>(); 
+
   get exp():E.Exp {
     return this._lineage.exp
   }
@@ -44,6 +53,7 @@ export class ExpComponent implements OnInit {
 
   onTexClick() {
     this.openDialogFor(this._lineage).then(newExp => {
+      console.log("calling change", newExp)
       this.changed.emit(new E.Lineage(this._lineage.chain, newExp))
     })
   }
@@ -73,6 +83,7 @@ export class ExpComponent implements OnInit {
   }
 
   onKidChanged(lineage:E.Lineage) {
+    console.log('kid change', lineage, this.changed)
     this.changed.emit(lineage)
   }
 
@@ -91,6 +102,18 @@ export class ExpComponent implements OnInit {
     }).toArray()
     let l = new E.Lineage(this._lineage.chain, new E.Matrix(newElements))
     this.changed.emit(l)
+  }
+  
+}
+
+function associativeKidsOfAdd(l:E.Lineage):E.Lineage[] {
+  if (l.exp instanceof E.Add) {
+    let ffa = l.exp.kids.map((k, i)=>{
+      return associativeKidsOfAdd(new E.Lineage(l.chain.concat([i]), k))
+    })
+    return asSequence(ffa).flatMap(x=>asSequence(x)).toArray()
+  } else {
+    return [l]
   }
 }
 /*

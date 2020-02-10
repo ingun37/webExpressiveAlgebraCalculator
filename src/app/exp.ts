@@ -13,7 +13,9 @@ export interface Exp {
     clone(newKids:Exp[]): Exp;
     eval(): Exp;
 }
+export interface Associative extends Exp {
 
+}
 export class Scalar implements Exp {
     isEq(e: Exp): boolean {
         if (e instanceof Scalar) {
@@ -31,7 +33,7 @@ export class Scalar implements Exp {
         public n:number
     ) {}
 }
-export class Add implements Exp {
+export class Add implements Associative {
     isEq(e: Exp): boolean {
         if (e instanceof Add) {
             return this.l == e.l && this.r == e.r

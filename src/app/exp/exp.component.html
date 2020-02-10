@@ -6,14 +6,14 @@
         <app-matrix [mat]="mat" (cellClick)="onCellClick($event)" (resized)="onMatrixResize($event)"></app-matrix>
     </div>
     <ng-template #elseBlock>
-        
-        
-        <div class="container">
-            <app-exp class="item" *ngFor="let kid of exp.kids; index as idx" [lineage]="makeLineageForKid(idx)"
-                (changed)="onKidChanged($event)"></app-exp>
-            </div>
 
-        </ng-template>
+
+        <div class="container">
+            <app-exp class="item" *ngFor="let lin of subviewLineages" [lineage]="lin" (changed)="onKidChanged($event)">
+            </app-exp>
+        </div>
+
+    </ng-template>
 
 
 </mat-card>

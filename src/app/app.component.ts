@@ -12,6 +12,7 @@ import { asSequence } from 'sequency';
 })
 export class AppComponent {
   mainChanged(l:Lineage) {
+    console.log("main changed", l)
     this.system.main$.pipe(first()).subscribe(main => {
       this.system.setMainExp(refChange(main, l.chain, l.exp))
     })
@@ -41,6 +42,7 @@ export class AppComponent {
   onVarChanged(name:string, newL:Lineage) {
     this.system.vars$.pipe(first()).subscribe(vars => {
       let v = asSequence(vars).first( v =>v.name == name)
+      console.log("changing var ", newL)
       this.system.updateVar(name, refChange(v.exp, newL.chain, newL.exp))
     })
   }
