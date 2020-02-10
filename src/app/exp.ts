@@ -2,7 +2,7 @@ import { sequenceOf, asSequence } from 'sequency'
 
 export class Lineage {
     constructor(
-        public chain:[Exp, number][],
+        public chain:number[],
         public exp:Exp
     ) {}
 }

@@ -67,8 +67,7 @@ export class ExpComponent implements OnInit {
   makeLineageForKid(kidIdx:number): E.Lineage {
     let thisExp = this._lineage.exp
     let kidExp = this._lineage.exp.kids[kidIdx]
-    let newLine:[E.Exp, number] = [thisExp, kidIdx]
-    return new E.Lineage(this._lineage.chain.concat([newLine])  , kidExp)
+    return new E.Lineage(this._lineage.chain.concat([kidIdx])  , kidExp)
   }
 
   onKidChanged(kidIdx:number, newKidExp:E.Exp) {
