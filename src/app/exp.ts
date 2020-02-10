@@ -41,12 +41,10 @@ export class Add implements Associative {
         return false
     }
     eval(): Exp {
-        console.log("add eval start!")
         let seq = flatAdd(this).toArray()
         let head = seq[0]
         let tail = seq.slice(1)
         let result = addXs(head, tail)
-        console.log("addd eval end!")
         return result
     }
     get latex(): string {
@@ -124,7 +122,6 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
 
 
 function add2(l:Exp, r:Exp): Exp {
-    console.log(l, r)
     if (l instanceof Scalar && r instanceof Scalar) {
         return new Scalar(l.n + r.n)
     }
