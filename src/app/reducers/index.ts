@@ -45,13 +45,12 @@ const initialState = new AppState(initialMain, initialVars, null)
 
 const _stateReducer = createReducer(initialState,
   on(updateMain, (state, prop) => {
-    
     return new AppState(prop.exp || new Var("X"), state.vars, state)
   }),
   on(updateVars, (state, prop) => {
     return new AppState(state.main, state.vars.map(x=>{
       if(x.name == prop.var.name) {
-        return prop.var
+        return new NamedVar(prop.var.name, prop.var.exp || new Var(prop.var.name))
       } else {
         return x
       }

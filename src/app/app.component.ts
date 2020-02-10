@@ -51,7 +51,10 @@ export class AppComponent {
     })
   }
   onVarRemoved(name:string, l:Lineage) {
-    console.log("var remove ", name, l)
+    this.system.vars$.pipe(first()).subscribe(vars=>{
+      let f = asSequence(vars).first(x=>x.name == name)
+      this.system.updateVar(f.name, refRemoved(f.exp, l.chain))
+    })
   }
   title = 'calc';
   constructor (
