@@ -68,7 +68,7 @@ const _stateReducer = createReducer(initialState,
     }
   }),
   on(clearAction, (state) => {
-    return new AppState(new Var("A"), [], state)
+    return new AppState(new Var("X"), [], state)
   })
 );
 
