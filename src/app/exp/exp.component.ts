@@ -41,10 +41,18 @@ export class ExpComponent implements OnInit {
   }
   constructor(public dialog: MatDialog) { }
 
+  @Output() removed = new EventEmitter<E.Lineage>();
+  onRemove(lineage: E.Lineage) {
+    this.removed.emit(lineage)
+  }
   openDialogFor(lineage: E.Lineage): Promise<E.Exp> {
     return this.dialog.open(ApplyComponent, {
       data: { lineage: lineage }
     }).afterClosed().toPromise().then(x => {
+      if (x === "remove") {
+        this.removed.emit(lineage)
+        throw "removing"
+      }
       if (x) {
         return x as E.Exp
       }

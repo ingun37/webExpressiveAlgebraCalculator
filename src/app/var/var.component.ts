@@ -27,4 +27,8 @@ export class VarComponent implements OnInit {
     console.log("on change in VarComp")
     this.changed.emit(l)
   }
+  @Output() removed = new EventEmitter<Lineage>()
+  onRemove(l:Lineage) {
+    this.removed.emit(l)
+  }
 }

@@ -55,6 +55,12 @@ export class ApplyComponent implements OnInit {
       this.dialogRef.close(e)
     }
   }
+  onCancel() {
+    this.dialogRef.close()
+  }
+  onRemove() {
+    this.dialogRef.close("remove")
+  }
 }
 
 class Option {

@@ -16,7 +16,7 @@
             <!-- <canvas #canvasEl width="100%" height="30"></canvas> -->
         </div>
         <div class="container">
-            <app-exp #subview class="item" *ngFor="let lin of subviewLineages" [lineage]="lin" (changed)="onKidChanged($event)">
+            <app-exp #subview class="item" *ngFor="let lin of subviewLineages" [lineage]="lin" (changed)="onKidChanged($event)" (removed)="onRemove($event)">
             </app-exp>
         </div>
 
