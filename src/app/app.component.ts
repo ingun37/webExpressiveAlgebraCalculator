@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Lineage, Exp,  Var, changed, Add} from './exp'
+import { Lineage, Exp,  Var, changed, Add, Matrix, Scalar} from './exp'
 import { SystemService } from './system.service';
 import { Observable, of, combineLatest } from 'rxjs';
 import { catchError, map, first } from 'rxjs/operators';
@@ -112,6 +112,10 @@ function refRemoved(e:Exp, lineage:number[]):Exp {
       } else {
         return null
       }
+    }
+    if (e instanceof Matrix) {
+      let remain = asSequence(newKids).map(x=>x ? x : new Scalar(0)).toArray()
+      return e.clone(remain)
     }
     return null
   }
