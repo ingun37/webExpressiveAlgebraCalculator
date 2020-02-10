@@ -3,7 +3,7 @@ import { Input } from '@angular/core';
 import * as E from '../exp';
 import { MatDialog } from '@angular/material/dialog';
 import { ApplyComponent } from '../apply/apply.component';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { range, asSequence } from 'sequency';
 
 
@@ -23,6 +23,7 @@ export class ExpComponent implements OnInit {
     } else {
       this.subviewLineages = this.exp.kids.map((x, i) => this.makeLineageForKid(i))
     }
+
   }
 
   subviewLineages: E.Lineage[]
@@ -104,46 +105,35 @@ export class ExpComponent implements OnInit {
     this.changed.emit(l)
   }
   @ViewChildren("subview", { read: ElementRef }) subviews: QueryList<ElementRef>;
-  centers:number[] = []
-  end:number = 0
-  ngAfterViewChecked() {
-    
-  }
-  ngAfterViewInit() {
-    setTimeout(() => {
-      
-      let a = this.subviews.reduce((l:number[], r)=>{
-        return l.concat([
-          l[l.length-1] + r.nativeElement.getBoundingClientRect().width
-        ])
-      }, [0])
-      console.log(a)
-      if (a.length > 1) {
-  
-        this.centers = range(0, a.length-2, 1).map(n=>Math.floor((a[n]+a[n+1])/2)).toArray()
-        this.end = this.centers[this.centers.length-1]
-        console.log(this.centers)
-      }
-    }, 1);
-    {
-      // let context = (this.canv.nativeElement as HTMLCanvasElement).getContext("2d")
-      // context.moveTo(20, 0)
-      // context.lineTo(20, 15)
-      // var accu = 0
-      // this.subviews.forEach(subview => {
-      //   let box = subview.nativeElement.getBoundingClientRect()
-      //   console.log(box)
-      //   let width = box.right - box.left
-      //   let x = accu + width/2
-        
-      //   context.lineTo(x, 15)
-      //   context.lineTo(x, 30)
-      //   context.moveTo(x, 15)
-      //   accu += width
-      // })
 
-      // context.stroke()
-    }
+  noti = new Subject<number>()
+  centers: number[]
+  end: number
+  ngAfterViewInit() {
+    this.subviews.changes.subscribe((subviews:QueryList<ElementRef>) => {
+      setTimeout(() => {
+        console.log("fuckkkkk")
+        let a = subviews.reduce((l: number[], r) => {
+          return l.concat([
+            l[l.length - 1] + r.nativeElement.getBoundingClientRect().width
+          ])
+        }, [0])
+        console.log('new subviews - ', a)
+        if (a.length > 1) {
+  
+          let newCenters = range(0, a.length - 2, 1).map(n => Math.floor((a[n] + a[n + 1]) / 2)).toArray()
+          this.centers = (newCenters)
+          this.end = (newCenters[newCenters.length - 1])
+          this.noti.next(newCenters.length)
+          console.log(this.centers)
+        }
+      }, 1);
+    })
+    this.subviews.notifyOnChanges()
+    // setTimeout(() => {
+
+    //   }
+    // }, 1);
   }
 }
 
