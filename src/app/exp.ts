@@ -1,4 +1,5 @@
 import { sequenceOf, asSequence } from 'sequency'
+import { flatAdd, addXs } from './exp-extension'
 
 export class Lineage {
     constructor(
@@ -41,7 +42,13 @@ export class Add implements Associative {
         return false
     }
     eval(): Exp {
-        return this
+        console.log("add eval start!")
+        let seq = flatAdd(this).toArray()
+        let head = seq[0]
+        let tail = seq.slice(1)
+        let result = addXs(head, tail)
+        console.log("addd eval end!")
+        return result
     }
     get latex(): string {
         return this.l.latex + " + " + this.r.latex
@@ -117,10 +124,3 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
 }
 
 
-export function changed(e:Exp, from:Exp, to:Exp): Exp {
-    if (e.isEq(from)) {
-        return to
-    }
-    let newKids = e.kids.map(x=>changed(x, from, to))
-    return e.clone(newKids)
-}

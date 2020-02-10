@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { Exp, Lineage, changed } from '../exp';
+import { Exp, Lineage } from '../exp';
 
 @Component({
   selector: 'app-var',

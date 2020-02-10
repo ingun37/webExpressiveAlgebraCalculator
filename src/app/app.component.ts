@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Lineage, Exp,  Var, changed, Add, Matrix, Scalar} from './exp'
+import { Lineage, Exp,  Var, Add, Matrix, Scalar} from './exp'
 import { SystemService } from './system.service';
 import { Observable, of, combineLatest } from 'rxjs';
 import { catchError, map, first } from 'rxjs/operators';
@@ -12,13 +12,11 @@ import { asSequence } from 'sequency';
 })
 export class AppComponent {
   mainRemoved(l:Lineage) {
-    console.log("removing main ", l)
     this.system.main$.pipe(first()).subscribe(main => {
       this.system.setMainExp(refRemoved(main, l.chain))
     })
   }
   mainChanged(l:Lineage) {
-    console.log("main changed", l)
     this.system.main$.pipe(first()).subscribe(main => {
       this.system.setMainExp(refChange(main, l.chain, l.exp))
     })
@@ -48,7 +46,6 @@ export class AppComponent {
   onVarChanged(name:string, newL:Lineage) {
     this.system.vars$.pipe(first()).subscribe(vars => {
       let v = asSequence(vars).first( v =>v.name == name)
-      console.log("changing var ", newL)
       this.system.updateVar(name, refChange(v.exp, newL.chain, newL.exp))
     })
   }
@@ -119,4 +116,13 @@ function refRemoved(e:Exp, lineage:number[]):Exp {
     }
     return null
   }
+}
+
+
+function changed(e: Exp, from: Exp, to: Exp): Exp {
+  if (e.isEq(from)) {
+      return to
+  }
+  let newKids = e.kids.map(x => changed(x, from, to))
+  return e.clone(newKids)
 }

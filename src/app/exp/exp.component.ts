@@ -62,7 +62,6 @@ export class ExpComponent implements OnInit {
 
   onTexClick() {
     this.openDialogFor(this._lineage).then(newExp => {
-      console.log("calling change", newExp)
       this.changed.emit(new E.Lineage(this._lineage.chain, newExp))
     })
   }
@@ -92,7 +91,6 @@ export class ExpComponent implements OnInit {
   }
 
   onKidChanged(lineage: E.Lineage) {
-    console.log('kid change', lineage, this.changed)
     this.changed.emit(lineage)
   }
 
@@ -120,20 +118,17 @@ export class ExpComponent implements OnInit {
   ngAfterViewInit() {
     this.subviews.changes.subscribe((subviews:QueryList<ElementRef>) => {
       setTimeout(() => {
-        console.log("fuckkkkk")
         let a = subviews.reduce((l: number[], r) => {
           return l.concat([
             l[l.length - 1] + r.nativeElement.getBoundingClientRect().width
           ])
         }, [0])
-        console.log('new subviews - ', a)
         if (a.length > 1) {
   
           let newCenters = range(0, a.length - 2, 1).map(n => Math.floor((a[n] + a[n + 1]) / 2)).toArray()
           this.centers = (newCenters)
           this.end = (newCenters[newCenters.length - 1])
           this.noti.next(newCenters.length)
-          console.log(this.centers)
         } else {
           this.centers = []
         }
