@@ -19,7 +19,7 @@ export class ExpComponent implements OnInit {
     this._lineage = l
     
   }
-  @Output() changed = new EventEmitter<E.Exp>(); 
+  @Output() changed = new EventEmitter<E.Lineage>(); 
   get exp():E.Exp {
     return this._lineage.exp
   }
@@ -44,7 +44,7 @@ export class ExpComponent implements OnInit {
 
   onTexClick() {
     this.openDialogFor(this._lineage).then(newExp => {
-      this.changed.emit(newExp)
+      this.changed.emit(new E.Lineage(this._lineage.chain, newExp))
     })
   }
 
@@ -59,8 +59,10 @@ export class ExpComponent implements OnInit {
   onCellClick(event:[number, number]) {
     let ri = event[0]
     let ci = event[1]
-    this.openDialogFor(this.makeLineageForKid(this.cell2kid(ri, ci))).then(newMatElement => {
-      this.onKidChanged(this.cell2kid(ri, ci), newMatElement)
+    let kidLineage = this.makeLineageForKid(this.cell2kid(ri, ci))
+    this.openDialogFor(kidLineage).then(newMatElement => {
+      let l = new E.Lineage(kidLineage.chain, newMatElement)
+      this.onKidChanged(l)
     })
   }
 
@@ -70,15 +72,8 @@ export class ExpComponent implements OnInit {
     return new E.Lineage(this._lineage.chain.concat([kidIdx])  , kidExp)
   }
 
-  onKidChanged(kidIdx:number, newKidExp:E.Exp) {
-    let newMe = this.exp.clone(this.exp.kids.map((e, ki)=>{
-      if (ki == kidIdx) {
-        return newKidExp
-      } else {
-        return e
-      }
-    }))
-    this.changed.emit(newMe)
+  onKidChanged(lineage:E.Lineage) {
+    this.changed.emit(lineage)
   }
 
   onMatrixResize(size:[number, number]) {
@@ -94,7 +89,8 @@ export class ExpComponent implements OnInit {
         }
       }).toArray()
     }).toArray()
-    this.changed.emit(new E.Matrix(newElements))
+    let l = new E.Lineage(this._lineage.chain, new E.Matrix(newElements))
+    this.changed.emit(l)
   }
 }
 /*

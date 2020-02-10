@@ -9,7 +9,7 @@ import { Exp, Lineage, changed } from '../exp';
 export class VarComponent implements OnInit {
   @Input() name:string
   @Input() exp:Exp
-  @Output() changed = new EventEmitter<Exp>(); 
+  @Output() changed = new EventEmitter<Lineage>(); 
 
   get lineage():Lineage {return new Lineage([], this.exp)}
 
@@ -19,7 +19,7 @@ export class VarComponent implements OnInit {
     
   }
 
-  onChange(newE:Exp) {
-    this.changed.emit(newE)
+  onChange(l:Lineage) {
+    this.changed.emit(l)
   }
 }

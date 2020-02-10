@@ -10,7 +10,7 @@
         
         <div class="container">
             <app-exp class="item" *ngFor="let kid of exp.kids; index as idx" [lineage]="makeLineageForKid(idx)"
-                (changed)="onKidChanged(idx, $event)"></app-exp>
+                (changed)="onKidChanged($event)"></app-exp>
             </div>
 
         </ng-template>
