@@ -4,7 +4,9 @@ import { Lineage, Exp, Add, Var, Scalar } from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { debounce, debounceTime, map } from 'rxjs/operators';
+import { debounce, debounceTime, map, zip } from 'rxjs/operators';
+import { Store, select } from '@ngrx/store';
+import { AppState, selectPredefinedVars } from '../reducers';
 
 @Component({
   selector: 'app-apply',
@@ -16,19 +18,22 @@ export class ApplyComponent implements OnInit {
 
   lineage: Lineage
   options:Observable<Option[]> = this.system.unusedVar.pipe(
-    map(varname=>{
+    zip(this.store.pipe(select(selectPredefinedVars))),
+    map(([varname, predefines])=>{
       let exp = this.lineage.exp
       let unusedVar = this.system.unusedVar
+      let pres = predefines.map(x=>new Var(x) as Exp)
       let availables:Exp[] = [
         new Add(exp, new Var(varname))
       ]
-      return availables.map(x=>new Option(x, x))
+      return (pres.concat(availables)).map(x=>new Option(x, x))
     })
   )
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ApplyComponent>,
-    private system:SystemService
+    private system:SystemService,
+    private store:Store<{state:AppState}>
     ) {
     this.lineage = data.lineage
     let exp = this.lineage.exp

@@ -82,6 +82,11 @@ function usedVars(e:Exp):Sequence<string> {
   }
   return asSequence(e.kids).flatMap(kid => usedVars(kid))
 }
+export const selectPredefinedVars = (state:{state:AppState})=>{
+  let varNames = state.state.vars.map(v=>v.name)
+
+  return varNames
+}
 export const selectUsedVar = (state:{state:AppState})=>{
   let ofMain = usedVars(state.state.main)
   let ofVars = asSequence(state.state.vars.map(pair=>pair.exp)).flatMap(x=>usedVars(x))
