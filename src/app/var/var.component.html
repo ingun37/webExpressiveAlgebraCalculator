@@ -1,2 +1,6 @@
-{{name}} = 
+<span class="var-name">{{name}} =</span>
+
+<button class="deleteIcon" mat-icon-button color="warn" aria-label="Example icon-button with a heart icon" (click)="onRemoveAll()">
+    <mat-icon>remove_circle</mat-icon>
+</button>
 <app-exp [lineage]="lineage" (changed)="onChange($event)" (removed)="onRemove($event)"></app-exp>

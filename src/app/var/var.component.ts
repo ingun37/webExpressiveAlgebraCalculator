@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Exp, Lineage } from '../exp';
+import { AppState, removeVars } from '../reducers';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-var',
@@ -17,7 +19,9 @@ export class VarComponent implements OnInit {
   @Output() changed = new EventEmitter<Lineage>(); 
 
 
-  constructor() { }
+  constructor(
+    private store:Store<{state:AppState}>
+  ) { }
 
   ngOnInit() {
     
@@ -29,5 +33,9 @@ export class VarComponent implements OnInit {
   @Output() removed = new EventEmitter<Lineage>()
   onRemove(l:Lineage) {
     this.removed.emit(l)
+  }
+
+  onRemoveAll() {
+    this.store.dispatch(removeVars({name:this.name}))
   }
 }

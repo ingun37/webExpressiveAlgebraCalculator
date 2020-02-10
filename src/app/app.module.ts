@@ -19,6 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { stateReducer } from './reducers';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MatInputModule,
     ReactiveFormsModule,
     StoreModule.forRoot({ state: stateReducer }),
-    DragDropModule
+    DragDropModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent],

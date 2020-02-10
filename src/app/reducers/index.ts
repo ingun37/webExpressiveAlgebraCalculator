@@ -31,6 +31,7 @@ export class AppState {
 export const updateMain = createAction("[Main Component] Update", props<{exp:Exp}>())
 export const updateVars = createAction("[Vars Component] Update", props<{var:NamedVar}>())
 export const addVars = createAction("[Vars Component] Add", props<{var:NamedVar}>())
+export const removeVars = createAction("[Vars Component] Remoe", props<{name:string}>())
 export const undoAction = createAction("[State Component] Undo")
 export const clearAction = createAction("[State Component] Clear")
 
@@ -68,6 +69,10 @@ const _stateReducer = createReducer(initialState,
   }),
   on(clearAction, (state) => {
     return new AppState(new Var("X"), [], state)
+  }),
+  on(removeVars, (state, props) => {
+    let name = props.name
+    return new AppState(state.main, state.vars.filter(x=>x.name != name), state)
   })
 );
 
