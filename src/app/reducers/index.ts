@@ -45,7 +45,8 @@ const initialState = new AppState(initialMain, initialVars, null)
 
 const _stateReducer = createReducer(initialState,
   on(updateMain, (state, prop) => {
-    return new AppState(prop.exp, state.vars, state)
+    
+    return new AppState(prop.exp || new Var("X"), state.vars, state)
   }),
   on(updateVars, (state, prop) => {
     return new AppState(state.main, state.vars.map(x=>{

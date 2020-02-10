@@ -13,6 +13,9 @@ import { asSequence } from 'sequency';
 export class AppComponent {
   mainRemoved(l:Lineage) {
     console.log("removing main ", l)
+    this.system.main$.pipe(first()).subscribe(main => {
+      this.system.setMainExp(refRemoved(main, l.chain))
+    })
   }
   mainChanged(l:Lineage) {
     console.log("main changed", l)

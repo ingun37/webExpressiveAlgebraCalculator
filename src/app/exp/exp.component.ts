@@ -134,6 +134,8 @@ export class ExpComponent implements OnInit {
           this.end = (newCenters[newCenters.length - 1])
           this.noti.next(newCenters.length)
           console.log(this.centers)
+        } else {
+          this.centers = []
         }
       }, 1);
     })
