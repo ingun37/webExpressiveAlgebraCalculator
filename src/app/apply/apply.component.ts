@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Lineage, Exp, Add, Var, Scalar } from '../exp';
+import { Lineage, Exp, Add, Var, Scalar, Matrix } from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -24,7 +24,8 @@ export class ApplyComponent implements OnInit {
       let unusedVar = this.system.unusedVar
       let pres = predefines.map(x=>new Var(x) as Exp)
       let availables:Exp[] = [
-        new Add(exp, new Var(varname))
+        new Add(exp, new Var(varname)),
+        new Matrix([[1,0],[0,1]].map(x=>x.map(y=>new Scalar(y) as Exp)))
       ]
       return (pres.concat(availables)).map(x=>new Option(x, x))
     })
