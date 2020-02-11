@@ -98,7 +98,8 @@ export class Matrix implements Exp {
         return false
     }
     eval(): Exp {
-        return this
+
+        return new Matrix(this.elements.map(r=>r.map(e=>e.eval())))
     }
     get latex(): string {
         let inner = this.elements.map((row) => {
@@ -148,6 +149,11 @@ function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: 
 
 
 function add2(l:Exp, r:Exp): Exp {
+    if (l instanceof Scalar) {
+        if (l.n == 0) {
+            return r
+        }
+    }
     if (l instanceof Scalar && r instanceof Scalar) {
         return new Scalar(l.n + r.n)
     }
@@ -192,9 +198,29 @@ function commutativeMul(l:Exp, r:Exp): Exp {
     if(l instanceof Scalar && r instanceof Scalar) {
         return new Scalar(l.n * r.n)
     }
+    if(l instanceof Scalar) {
+        if (l.n == 0) {
+            return new Scalar(0)
+        } else if (l.n == 1) {
+            return r
+        }
+    }
     return null
 }
 function nonCommutativeMul(l:Exp, r:Exp): Exp {
+    if (l instanceof Matrix && r instanceof Matrix) {
+        if (l.elements[0].length == r.elements.length) {
+            let newElements = rng(l.elements.length).map(row=>{
+                return rng(r.elements[0].length).map(col => {
+                    let lrow = asSequence(r.elements[row])
+                    let rcol = asSequence( l.elements.map(rrow=>rrow[col]))
+                    return lrow.zip(rcol).map(([x,y])=>new Mul(x,y)).reduce((l:Exp,r)=>new Add(l,r)).eval()
+                })
+            })
+            let newE = newElements.map(x=>x.toArray()).toArray()
+            return new Matrix(newE)
+        }
+    }
     return new Mul(l,r)
 }
 function mulXs(head:Exp, tail:Exp[]): Exp {
