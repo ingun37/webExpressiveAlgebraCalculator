@@ -20,6 +20,8 @@ export class ExpComponent implements OnInit {
 
     if (this.exp instanceof E.Add) {
       this.subviewLineages = associativeKidsOfAdd(l)
+    } else if (this.exp instanceof E.Mul) {
+      this.subviewLineages = associativeKidsOfMul(l)
     } else {
       this.subviewLineages = this.exp.kids.map((x, i) => this.makeLineageForKid(i))
     }
@@ -146,6 +148,17 @@ function associativeKidsOfAdd(l: E.Lineage): E.Lineage[] {
   if (l.exp instanceof E.Add) {
     let ffa = l.exp.kids.map((k, i) => {
       return associativeKidsOfAdd(new E.Lineage(l.chain.concat([i]), k))
+    })
+    return asSequence(ffa).flatMap(x => asSequence(x)).toArray()
+  } else {
+    return [l]
+  }
+}
+
+function associativeKidsOfMul(l: E.Lineage): E.Lineage[] {
+  if (l.exp instanceof E.Mul) {
+    let ffa = l.exp.kids.map((k, i) => {
+      return associativeKidsOfMul(new E.Lineage(l.chain.concat([i]), k))
     })
     return asSequence(ffa).flatMap(x => asSequence(x)).toArray()
   } else {
