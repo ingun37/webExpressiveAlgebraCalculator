@@ -312,6 +312,7 @@ function adjacentCommutativeMul(l:Exp, r:Exp): Exp {
             return new Power(l.base, new Add(l.exponent, r.exponent).eval())
         }
     }
+    
     return null
 }
 function mulXs(head:Exp, tail:Exp[]): Exp {
@@ -374,8 +375,8 @@ export class Fraction implements Exp {
         return new Fraction(newKids[0], newKids[1])
     }
     eval(): Exp {
-        let n = this.numo
-        let d = this.deno
+        let n = this.numo.eval()
+        let d = this.deno.eval()
         if (n instanceof Scalar) {
             let nn = n.n
             if (d instanceof Scalar) {
@@ -421,7 +422,7 @@ export class Fraction implements Exp {
                 }
             }
         }
-        return this
+        return new Mul(this.numo, new Power(this.deno, new Scalar(-1)))
     }
 
 
@@ -515,8 +516,6 @@ export class Power implements Exp {
                     let mm = rng(Math.abs(n)).map(x=>base).reduce((l:Exp,r)=>new Mul(l,r))
                     if (n > 0) {
                         return mm.eval()
-                    } else {
-                        return new Fraction(new Scalar(1), mm).eval()
                     }
                 }
 
@@ -524,10 +523,10 @@ export class Power implements Exp {
         }
 
         if (base instanceof Fraction) {
-            return new Fraction(new Power(base.numo, ex), new Power(base.deno, ex)).eval()
+            return new Mul(new Power(base.numo, ex), new Power(base.deno, new Negate(ex)))
         }
 
-        throw new Error("Method not implemented.");
+        return this
     }
 
     
