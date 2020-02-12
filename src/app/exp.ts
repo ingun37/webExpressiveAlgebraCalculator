@@ -239,6 +239,9 @@ function add2(l:Exp, r:Exp): Exp {
 }
 
 function rng2(start:number, lessThan:number): Sequence<number> {
+    if (start == lessThan-1) {
+        return asSequence([start])
+    }
     return range(start, lessThan-1, 1)
 }
 function rng(n:number): Sequence<number> {
