@@ -242,6 +242,9 @@ function rng2(start:number, lessThan:number): Sequence<number> {
     return range(start, lessThan-1, 1)
 }
 function rng(n:number): Sequence<number> {
+    if ( n == 1) {
+        return asSequence([0])
+    }
     return range(0, n-1, 1)
 }
 function addXs(head:Exp, tail:Exp[]): Exp {
@@ -498,9 +501,9 @@ export class Power implements Exp {
         }
 
         if (ex instanceof Scalar) {
-            let n = ex.n
-            if (isNumber(n)) {
-                if (n == 0) {
+            let exponentNumber = ex.n
+            if (isNumber(exponentNumber)) {
+                if (exponentNumber == 0) {
                     if (base instanceof Matrix) {
                         return new Matrix(base.elements.map((row, ri)=>
                             row.map((e, ci):Exp=>
@@ -510,12 +513,27 @@ export class Power implements Exp {
                     } else if (base instanceof Scalar) {
                         return new Scalar(1)
                     }
-                } else if (n == 1) {
+                } else if (exponentNumber == 1) {
                     return base
-                } else {
-                    let mm = rng(Math.abs(n)).map(x=>base).reduce((l:Exp,r)=>new Mul(l,r))
-                    if (n > 0) {
-                        return mm.eval()
+                } else if (Number.isInteger(exponentNumber)) {
+                    let result = rng(Math.abs(exponentNumber)).map(x=>base).fold(new Scalar(1),(l:Exp,r)=>{
+                        console.log('mul')
+                        return new Mul(l,r)
+                    }).eval()
+                    console.log(result)
+                    if (result instanceof Scalar ) {
+                        if (exponentNumber < 0) {
+                            let resultN = result.n
+                            if (isRational(resultN)) {
+                                return new Scalar(new Rational(resultN.denominator, resultN.numerator))
+                            } else if (Number.isInteger(resultN)) {
+                                return new Scalar(new Rational(1, resultN))
+                            } else {
+                                return new Scalar(1/resultN)
+                            }
+                        } else {
+                            return result
+                        }
                     }
                 }
 
