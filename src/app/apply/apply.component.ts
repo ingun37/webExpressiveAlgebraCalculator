@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul, Fraction } from '../exp';
+import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul, Fraction, Negate } from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -23,10 +23,14 @@ export class ApplyComponent implements OnInit {
       let exp = this.lineage.exp
       let unusedVar = this.system.unusedVar
       let pres = predefines.map(x=>new Var(x) as Exp)
+      let newvar = new Var(varname)
       let availables:Exp[] = [
-        new Add(exp, new Var(varname)),
-        new Mul(exp, new Var(varname)),
-        new Matrix([[1,0],[0,1]].map(x=>x.map(y=>new Scalar(y) as Exp)))
+        new Add(exp, newvar),
+        new Mul(exp, newvar),
+        new Matrix([[1,0],[0,1]].map(x=>x.map(y=>new Scalar(y) as Exp))),
+        new Fraction(exp, newvar),
+        new Fraction(newvar, exp),
+        new Negate(exp)
       ]
       return (pres.concat(availables)).map(x=>new Option(x, x))
     })
@@ -77,6 +81,15 @@ class Option {
   ) {}
 }
 function evaluateExpression(expression:string):Exp {
+  {
+    let m = expression.match(/^-(.+)$/)
+    if (m) {
+      let e = evaluateExpression(m[1])
+      if (e) {
+        return new Negate(e)
+      }
+    }
+  }
   {
     let m = expression.match(/^[\d\.]+$/)
     if (m) {

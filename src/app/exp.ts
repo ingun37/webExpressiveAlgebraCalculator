@@ -18,6 +18,9 @@ export interface Associative extends Exp {
     l:Exp
     r:Exp
 }
+export function instanceOfAssociative(object: Exp): object is Associative {
+    return 'l' in object && 'r' in object
+}
 function isRational(n: number | Rational): n is Rational {
     return (n as Rational).add !== undefined;
 }
@@ -262,6 +265,11 @@ function commutativeMul(l:Exp, r:Exp): Exp {
             return r
         }
     }
+    if(l instanceof Scalar && r instanceof Matrix) {
+        return new Matrix(
+            r.elements.map(row=>row.map(e=>new Mul(new Scalar(-1), e).eval()))
+        )
+    }
     return null
 }
 function nonCommutativeMul(l:Exp, r:Exp): Exp {
@@ -389,4 +397,42 @@ export class Fraction implements Exp {
     }
 
 
+}
+
+export class Negate implements Exp {
+    constructor (
+        public e:Exp
+    ) {}
+    get latex(): string {
+        let e = this.e
+        if (instanceOfAssociative(e)) {
+            return `- ({${e.latex}})`
+        }
+        return `- {${e.latex}}`
+    }
+    get kids(): Exp[] {
+        return [this.e]
+    }
+    isEq(e: Exp): boolean {
+        if (e instanceof Negate) {
+            return e.e.isEq(this.e)
+        }
+    }
+    clone(newKids: Exp[]): Exp {
+        return new Negate(newKids[0])
+    }
+    eval(): Exp {
+        let e = this.e
+        if (e instanceof Scalar) {
+            let s = e.n
+            if (isRational(s)) {
+                return new Scalar(new Rational(-s.numerator, s.denominator))
+            } else {
+                return new Scalar(-s)
+            }
+        }
+        return new Mul(new Scalar(-1), e).eval()
+    }
+
+    
 }
