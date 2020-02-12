@@ -61,7 +61,7 @@ export class ApplyComponent implements OnInit {
     this.dialogRef.close(option.original)
   }
   onEval() {
-    let e = evaluateExpression(this.expressionControl.value)
+    let e = evaluateExpression(this.expressionControl.value).eval()
     if(e) {
       this.dialogRef.close(e)
     }
