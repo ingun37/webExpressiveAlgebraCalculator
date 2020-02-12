@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul } from '../exp';
+import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul, Fraction } from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -78,9 +78,10 @@ class Option {
 }
 function evaluateExpression(expression:string):Exp {
   {
-    let m = expression.match(/^\d+$/)
+    let m = expression.match(/^[\d\.]+$/)
     if (m) {
-      return new Scalar(parseInt(m[0]))
+      
+      return new Scalar(Number(m[0]))
     }
   }
   {
@@ -97,6 +98,18 @@ function evaluateExpression(expression:string):Exp {
         let r = evaluateExpression(m[2])
         if(r) {
           return new Add(l, r)
+        }
+      }
+    }
+  }
+  {
+    let m = expression.match(/^(.+)\/(.+)$/)
+    if (m) {
+      let l = evaluateExpression(m[1])
+      if(l) {
+        let r = evaluateExpression(m[2])
+        if(r) {
+          return new Fraction(l, r)
         }
       }
     }

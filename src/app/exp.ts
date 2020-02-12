@@ -1,4 +1,5 @@
 import Sequence, { sequenceOf, asSequence, range } from 'sequency'
+import { Rational } from './exp-extension'
 
 export class Lineage {
     constructor(
@@ -17,6 +18,12 @@ export interface Associative extends Exp {
     l:Exp
     r:Exp
 }
+function isRational(n: number | Rational): n is Rational {
+    return (n as Rational).add !== undefined;
+}
+function isNumber(n: number | Rational): n is number {
+    return !isRational(n)
+}
 export class Scalar implements Exp {
     isEq(e: Exp): boolean {
         if (e instanceof Scalar) {
@@ -27,12 +34,62 @@ export class Scalar implements Exp {
     eval(): Exp {
         return this
     }
-    get latex(): string {return `${this.n}`}
+    get latex(): string {
+        let n = this.n
+        if (isRational(n)) {
+            return `\\frac{${n.numerator}}{${n.denominator}}`
+            //"\\frac{\(r.numerator)}{\(r.denominator)}"
+        } else {
+            return `${this.n}`
+        }
+    }
     get kids(): Exp[] { return [] }
     clone(newKids:Exp[]): Exp {return this}
     constructor (
-        public n:number
+        public n:number | Rational
     ) {}
+    add(s:Scalar): Scalar {
+        let n = this.n
+        let m = s.n
+        if(isRational(n)) {
+            if(isRational(m)) {
+                return new Scalar(n.add(m))
+            } else {
+                if (Number.isInteger(m)) {
+                    return new Scalar(n.add(new Rational(m,1)))
+                } else {
+                    return new Scalar( (n.numerator / n.denominator) + m)
+                }
+            }
+        } else {
+            if (isRational(m)) {
+                return s.add(this)
+            } else {
+                return new Scalar( n + m)
+            }
+        }
+    }
+    mul(s:Scalar): Scalar {
+        let n = this.n
+        let m = s.n
+        if(isRational(n)) {
+            if(isRational(m)) {
+                return new Scalar(n.mul(m))
+            } else {
+                if (Number.isInteger(m)) {
+                    return new Scalar(n.mul(new Rational(m,1)))
+                } else {
+                    return new Scalar( (n.numerator / n.denominator) * m)
+                }
+            }
+        } else {
+            if (isRational(m)) {
+                return s.mul(this)
+            } else {
+                return new Scalar( n * m)
+            }
+        }
+    }
 }
 export class Add implements Associative {
     isEq(e: Exp): boolean {
@@ -155,7 +212,7 @@ function add2(l:Exp, r:Exp): Exp {
         }
     }
     if (l instanceof Scalar && r instanceof Scalar) {
-        return new Scalar(l.n + r.n)
+        return l.add(r)
     }
     if (l instanceof Matrix && r instanceof Matrix) {
         if (l.elements.length == r.elements.length && l.elements[0].length == r.elements[0].length) {
@@ -196,7 +253,7 @@ function addXs(head:Exp, tail:Exp[]): Exp {
 }
 function commutativeMul(l:Exp, r:Exp): Exp {
     if(l instanceof Scalar && r instanceof Scalar) {
-        return new Scalar(l.n * r.n)
+        return l.mul(r)
     }
     if(l instanceof Scalar) {
         if (l.n == 0) {
@@ -258,4 +315,78 @@ function flatMul(e:Mul): Sequence<Exp> {
             return sequenceOf(k)
         }
     })
+}
+
+export class Fraction implements Exp {
+    constructor (
+        public numo:Exp,
+        public deno:Exp
+    ) {}
+    get latex(): string {
+        return `\\frac{${this.numo.latex}}{${this.deno.latex}}`
+    }
+    get kids(): Exp[] {
+        return [this.numo, this.deno]
+    }
+    isEq(e: Exp): boolean {
+        if (e instanceof Fraction) {
+            return this.numo.isEq(e.numo) && this.deno.isEq(e.deno)
+        }
+        return false
+    }
+    clone(newKids: Exp[]): Exp {
+        return new Fraction(newKids[0], newKids[1])
+    }
+    eval(): Exp {
+        let n = this.numo
+        let d = this.deno
+        if (n instanceof Scalar) {
+            let nn = n.n
+            if (d instanceof Scalar) {
+                let dd = d.n
+                if (isNumber(nn)) {
+                    if (isNumber(dd)) {//number / number
+                        if (Number.isInteger(nn)) {
+                            //int / number
+                            if (Number.isInteger(dd)) {
+                                // int / int
+                                return new Scalar(new Rational(nn, dd))
+                            } else {
+                                // int / float
+                                return new Scalar(nn/dd)
+                            }
+                        } else {
+                            //float / float
+                            return new Scalar(nn/dd)
+                        }
+                    } else { //number/rational
+                        if (Number.isInteger(nn)) { 
+                            //int / rational
+                            return new Scalar(new Rational(nn,1).div(dd))
+                        } else {
+                            //float / rational
+                            return new Scalar(nn / (dd.numerator / dd.denominator))
+                        }
+                    }
+                } else {
+                    if (isNumber(dd)) {
+                        //rational / number
+                        if (Number.isInteger(dd)) {
+                            //rational / int
+                            return new Scalar(nn.div(new Rational(dd, 1)))
+                        } else {
+                            //rational / float
+                            return new Scalar((nn.numerator / nn.denominator) / dd)
+                        }
+                    } else {
+                        //rational / rational
+                        return new Scalar(nn.div(dd))
+                    }
+                }
+            }
+        }
+        return this
+    }
+
+
 }
