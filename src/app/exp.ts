@@ -48,9 +48,17 @@ export class Scalar implements Exp {
     }
     get kids(): Exp[] { return [] }
     clone(newKids:Exp[]): Exp {return this}
+    n:number | Rational
     constructor (
-        public n:number | Rational
-    ) {}
+        n:number | Rational
+    ) {
+        this.n = n
+        if (n instanceof Rational) {
+            if (Math.abs(n.numerator) == Math.abs(n.denominator)) {
+                this.n = n.numerator / n.numerator
+            }
+        }
+    }
     add(s:Scalar): Scalar {
         let n = this.n
         let m = s.n
@@ -272,6 +280,8 @@ function commutativeMul(l:Exp, r:Exp): Exp {
     }
     return null
 }
+
+//DONT EVAL HERE!! 
 function nonCommutativeMul(l:Exp, r:Exp): Exp {
     if (l instanceof Matrix && r instanceof Matrix) {
         if (l.elements[0].length == r.elements.length) {
@@ -286,7 +296,23 @@ function nonCommutativeMul(l:Exp, r:Exp): Exp {
             return new Matrix(newE)
         }
     }
+    if(l.isEq(r)) {
+        return new Power(l, new Scalar(2))
+    }
     return new Mul(l,r)
+}
+function adjacentCommutativeMul(l:Exp, r:Exp): Exp {
+    if (l instanceof Power) {
+        if (l.base.isEq(r)) {
+            return new Power(r, new Add(l.exponent, new Scalar(1)).eval())
+        }
+    }
+    if (l instanceof Power && r instanceof Power) {
+        if (l.base.isEq(r.base)) {
+            return new Power(l.base, new Add(l.exponent, r.exponent).eval())
+        }
+    }
+    return null
 }
 function mulXs(head:Exp, tail:Exp[]): Exp {
     if (tail.length == 0) {
@@ -302,7 +328,9 @@ function mulXs(head:Exp, tail:Exp[]): Exp {
     if (f) {
         return mulXs(f[0], f[1].toArray())
     } else {
-        return tail.reduce((l,r)=>nonCommutativeMul(l,r), head)
+        return tail.reduce((l,r)=>{
+            return adjacentCommutativeMul(l,r) || adjacentCommutativeMul(r,l) || nonCommutativeMul(l,r)
+        }, head)
     }
 }
 function flatAdd(e:Add): Sequence<Exp> {
@@ -432,6 +460,74 @@ export class Negate implements Exp {
             }
         }
         return new Mul(new Scalar(-1), e).eval()
+    }
+
+    
+}
+
+export class Power implements Exp {
+    constructor (
+        public base:Exp,
+        public exponent:Exp
+    ) {}
+    get latex(): string {
+        let base = this.base
+        let ex = this.exponent
+        if (instanceOfAssociative(base)) {
+            return `{(${base.latex})} ^ {${ex.latex}}`
+        } else {
+            return `{${base.latex}} ^ {${ex.latex}}`
+        }
+    }
+    get kids(): Exp[] { return [this.base, this.exponent]}
+    isEq(e: Exp): boolean {
+        if (e instanceof Power) {
+            return this.base.isEq(e.base) && this.exponent.isEq(e.exponent)
+        }
+        return false
+    }
+    clone(newKids: Exp[]): Exp {
+        return new Power(newKids[0], newKids[1])
+    }
+    eval(): Exp {
+        let base = this.base.eval()
+        let ex = this.exponent.eval()
+        if (base instanceof Power) {
+            return new Power(base, new Mul(ex, base.exponent)).eval()
+        }
+
+        if (ex instanceof Scalar) {
+            let n = ex.n
+            if (isNumber(n)) {
+                if (n == 0) {
+                    if (base instanceof Matrix) {
+                        return new Matrix(base.elements.map((row, ri)=>
+                            row.map((e, ci):Exp=>
+                                ri == ci ? new Scalar(1) : new Scalar(0)
+                            )
+                        ))
+                    } else if (base instanceof Scalar) {
+                        return new Scalar(1)
+                    }
+                } else if (n == 1) {
+                    return base
+                } else {
+                    let mm = rng(Math.abs(n)).map(x=>base).reduce((l:Exp,r)=>new Mul(l,r))
+                    if (n > 0) {
+                        return mm.eval()
+                    } else {
+                        return new Fraction(new Scalar(1), mm).eval()
+                    }
+                }
+
+            }
+        }
+
+        if (base instanceof Fraction) {
+            return new Fraction(new Power(base.numo, ex), new Power(base.deno, ex)).eval()
+        }
+
+        throw new Error("Method not implemented.");
     }
 
     

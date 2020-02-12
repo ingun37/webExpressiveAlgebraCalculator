@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul, Fraction, Negate } from '../exp';
+import { Lineage, Exp, Add, Var, Scalar, Matrix, Mul, Fraction, Negate, Power} from '../exp';
 import { SystemService } from '../system.service';
 import { FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -123,6 +123,18 @@ function evaluateExpression(expression:string):Exp {
         let r = evaluateExpression(m[2])
         if(r) {
           return new Fraction(l, r)
+        }
+      }
+    }
+  }
+  {
+    let m = expression.match(/^(.+)\^(.+)$/)
+    if (m) {
+      let l = evaluateExpression(m[1])
+      if(l) {
+        let r = evaluateExpression(m[2])
+        if(r) {
+          return new Power(l, r)
         }
       }
     }
