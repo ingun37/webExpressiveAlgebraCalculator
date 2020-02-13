@@ -80,22 +80,15 @@ export function stateReducer(state, action) {
   return _stateReducer(state, action);
 }
 
-function usedVars(e:Exp):Sequence<string> {
-  if (e instanceof Var) {
-    return sequenceOf(e.name)
-  }
-  return asSequence(e.kids).flatMap(kid => usedVars(kid))
-}
+
 export const selectPredefinedVars = (state:{state:AppState})=>{
   let varNames = state.state.vars.map(v=>v.name)
-
   return varNames
 }
 export const selectUsedVar = (state:{state:AppState})=>{
   let ofMain = usedVars(state.state.main)
   let ofVars = asSequence(state.state.vars.map(pair=>pair.exp)).flatMap(x=>usedVars(x))
   let varNames = state.state.vars.map(v=>v.name)
-
   return ofMain.toArray().concat(ofVars.toArray(), varNames)
 }
 
@@ -106,6 +99,18 @@ export const selectUnusedVar = createSelector(
     return name
   }
 );
+
+export const selectFinalEvaluation = (state:{state:AppState})=>{
+  let vars = state.state.vars
+  let main = state.state.main
+  let substituded = vars.reduce((l,r)=>{
+    let varname = r.name
+    let varexp = r.exp
+    return changed(l, new Var(varname), varexp)
+  }, main)
+  return "= " + substituded.eval().latex
+}
+
 function caretesian(xs:Sequence<string>, ys:Sequence<string>): Sequence<string> {
   return xs.flatMap(x=> ys.map(y=>x.concat(y)))
 }
@@ -119,4 +124,17 @@ function freeMonoid(): Sequence<string> {
     }
     return prod
   }).flatten()
+}
+function usedVars(e:Exp):Sequence<string> {
+  if (e instanceof Var) {
+    return sequenceOf(e.name)
+  }
+  return asSequence(e.kids).flatMap(kid => usedVars(kid))
+}
+function changed(e: Exp, from: Exp, to: Exp): Exp {
+  if (e.isEq(from)) {
+      return to
+  }
+  let newKids = e.kids.map(x => changed(x, from, to))
+  return e.clone(newKids)
 }

@@ -287,26 +287,6 @@ function commutativeMul(l:Exp, r:Exp): Exp {
     return null
 }
 
-//DONT EVAL HERE!! 
-function nonCommutativeMul(l:Exp, r:Exp): Exp {
-    if (l instanceof Matrix && r instanceof Matrix) {
-        if (l.elements[0].length == r.elements.length) {
-            let newElements = rng(l.elements.length).map(row=>{
-                return rng(r.elements[0].length).map(col => {
-                    let lrow = asSequence(r.elements[row])
-                    let rcol = asSequence( l.elements.map(rrow=>rrow[col]))
-                    return lrow.zip(rcol).map(([x,y])=>new Mul(x,y)).reduce((l:Exp,r)=>new Add(l,r)).eval()
-                })
-            })
-            let newE = newElements.map(x=>x.toArray()).toArray()
-            return new Matrix(newE)
-        }
-    }
-    if(l.isEq(r)) {
-        return new Power(l, new Scalar(2))
-    }
-    return new Mul(l,r)
-}
 function adjacentCommutativeMul(l:Exp, r:Exp): Exp {
     if (l instanceof Power) {
         if (l.base.isEq(r)) {
@@ -319,7 +299,48 @@ function adjacentCommutativeMul(l:Exp, r:Exp): Exp {
         }
     }
     
+    if(l.isEq(r)) {
+        console.log('equal',l,r)
+        return new Power(l, new Scalar(2))
+    }
     return null
+}
+function adjacentNonCommuteMul(l:Exp, r:Exp): Exp {
+    if (l instanceof Matrix && r instanceof Matrix) {
+        if (l.elements[0].length == r.elements.length) {
+            console.log('can mul mat')
+            let newElements = rng(l.elements.length).map(row=>{
+                return rng(r.elements[0].length).map(col => {
+                    let lrow = asSequence(l.elements[row])
+                    let rcol = asSequence(r.elements.map(rrow=>rrow[col]))
+                    return lrow.zip(rcol).map(([x,y])=>new Mul(x,y)).reduce((l:Exp,r)=>new Add(l,r)).eval()
+                })
+            })
+            let newE = newElements.map(x=>x.toArray()).toArray()
+            return new Matrix(newE)
+        }
+    }
+    return null
+}
+function pairwiseMul(head:Exp, tail:Exp[]): Exp {
+    if (tail.length == 0) {return head}
+    let exps = [head].concat(tail)
+    let couple = rng(exps.length-1).mapNotNull((idx):[number, Exp]=>{
+        let l = exps[idx]
+        let r = exps[idx+1]
+        let combined = adjacentNonCommuteMul(l, r) || adjacentCommutativeMul(l, r) || adjacentCommutativeMul(r,l)
+        if (combined) {
+            return [idx, combined]
+        } else {
+            return null
+        }
+    }).firstOrNull()
+    if (couple) {
+        let x = exps.slice(0, couple[0]).concat([couple[1]], exps.slice(couple[0]+2))
+        return pairwiseMul(x[0], x.slice(1))
+    } else {
+        return tail.reduce((l,r)=>new Mul(l,r), head)
+    }
 }
 function mulXs(head:Exp, tail:Exp[]): Exp {
     if (tail.length == 0) {
@@ -335,9 +356,7 @@ function mulXs(head:Exp, tail:Exp[]): Exp {
     if (f) {
         return mulXs(f[0], f[1].toArray())
     } else {
-        return tail.reduce((l,r)=>{
-            return adjacentCommutativeMul(l,r) || adjacentCommutativeMul(r,l) || nonCommutativeMul(l,r)
-        }, head)
+        return pairwiseMul(head, tail)
     }
 }
 function flatAdd(e:Add): Sequence<Exp> {

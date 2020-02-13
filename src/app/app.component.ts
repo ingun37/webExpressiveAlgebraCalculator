@@ -3,8 +3,9 @@ import { Lineage, Exp,  Var, Add, Matrix, Scalar, instanceOfAssociative} from '.
 import { SystemService } from './system.service';
 import { Observable, of, combineLatest } from 'rxjs';
 import { catchError, map, first, debounceTime } from 'rxjs/operators';
-import { NamedVar } from './reducers';
+import { NamedVar, AppState, selectFinalEvaluation } from './reducers';
 import { asSequence } from 'sequency';
+import { Store, select } from '@ngrx/store';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -30,20 +31,7 @@ export class AppComponent {
   // get rootLineage():Lineage {
   //   return new Lineage([], this.system.mainExp)
   // }
-  result = combineLatest(this.system.vars$, this.system.main$.pipe(map(x=>[new NamedVar('',x)]))).pipe(
-    debounceTime(50),
-    map(tup=>{
-      let vars = tup[0]
-      let main = tup[1][0].exp
-      let substituded = vars.reduce((l,r)=>{
-        let varname = r.name
-        let varexp = r.exp
-        return changed(l, new Var(varname), varexp)
-      }, main)
-      return "= " + substituded.eval().latex
-    }),
-    catchError(()=>"\\text{Invalid Expression}")
-  )
+  result = this.store.pipe(select(selectFinalEvaluation))
   onVarChanged(name:string, newL:Lineage) {
     this.system.vars$.pipe(first()).subscribe(vars => {
       let v = asSequence(vars).first( v =>v.name == name)
@@ -58,7 +46,8 @@ export class AppComponent {
   }
   title = 'calc';
   constructor (
-    private system:SystemService
+    private system:SystemService,
+    private store:Store<{state:AppState}>
   ) {
     // this.rootLineage = new Lineage([], this.system.main)
   }
@@ -118,10 +107,3 @@ function refRemoved(e:Exp, lineage:number[]):Exp {
 }
 
 
-function changed(e: Exp, from: Exp, to: Exp): Exp {
-  if (e.isEq(from)) {
-      return to
-  }
-  let newKids = e.kids.map(x => changed(x, from, to))
-  return e.clone(newKids)
-}

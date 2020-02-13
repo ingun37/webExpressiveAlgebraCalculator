@@ -35,6 +35,7 @@ export class SystemService {
   )
   
   setMainExp(exp:Exp) {
+    console.log("main changed",exp)
     this.store.dispatch(updateMain({exp:exp}))
   }
 
