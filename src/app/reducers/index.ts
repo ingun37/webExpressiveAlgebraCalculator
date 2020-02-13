@@ -10,7 +10,7 @@ import {
   on
 } from '@ngrx/store';
 import { environment } from '../../environments/environment';
-import { Exp, Var, Scalar, Add, Matrix } from '../exp';
+import { Exp, Var, Scalar, Add, Matrix, Mul } from '../exp';
 import Sequence, { asSequence, sequenceOf, generateSequence } from 'sequency';
 
 export class NamedVar{
@@ -108,7 +108,7 @@ export const selectFinalEvaluation = (state:{state:AppState})=>{
     let varexp = r.exp
     return changed(l, new Var(varname), varexp)
   }, main)
-  return "= " + substituded.eval().latex
+  return "= " + evaluate(substituded).latex
 }
 
 function caretesian(xs:Sequence<string>, ys:Sequence<string>): Sequence<string> {
@@ -137,4 +137,28 @@ function changed(e: Exp, from: Exp, to: Exp): Exp {
   }
   let newKids = e.kids.map(x => changed(x, from, to))
   return e.clone(newKids)
+}
+function distributeFlat(e:Exp):Exp[] {
+  if (e instanceof Add) {
+    return distributeFlat(e.l).concat(distributeFlat(e.r))
+  } else if (e instanceof Mul) {
+    let prod = asSequence(distributeFlat(e.l)).flatMap(x=>{
+      return asSequence(distributeFlat(e.r)).map(y=>{
+        return new Mul(x,y)
+      })
+    }).toArray()
+    if (prod.length > 1) {
+      let aa = asSequence(prod).flatMap(x=>asSequence(distributeFlat(x)))
+      return aa.toArray()
+    } else {
+      return [e]
+    }
+  } else {
+    return [e]
+  }
+}
+function evaluate(e:Exp):Exp {
+  let xs = distributeFlat(e.eval())
+  let added = xs.reduce((l,r)=>new Add(l,r))
+  return added.eval()
 }
