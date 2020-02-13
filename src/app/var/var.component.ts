@@ -38,4 +38,7 @@ export class VarComponent implements OnInit {
   onRemoveAll() {
     this.store.dispatch(removeVars({name:this.name}))
   }
+  onEditName() {
+    
+  }
 }

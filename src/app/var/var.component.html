@@ -3,4 +3,8 @@
 <button class="deleteIcon" mat-icon-button color="warn" aria-label="Example icon-button with a heart icon" (click)="onRemoveAll()">
     <mat-icon>remove_circle</mat-icon>
 </button>
+<button class="deleteIcon" mat-icon-button aria-label="Example icon-button with a heart icon" (click)="onEditName()">
+    <mat-icon>edit</mat-icon>
+</button>
+
 <app-exp [lineage]="lineage" (changed)="onChange($event)" (removed)="onRemove($event)"></app-exp>
