@@ -100,8 +100,8 @@ export class ExpComponent implements OnInit {
     let row = size[0]
     let col = size[1]
     let mat = this.mat
-    let newElements = range(0, row - 1, 1).map(r => {
-      return range(0, col - 1, 1).map((c): E.Exp => {
+    let newElements = E.rng(row).map(r => {
+      return E.rng(col).map((c): E.Exp => {
         if (r < mat.elements.length && c < mat.elements[0].length) {
           return mat.elements[r][c]
         } else {
@@ -109,6 +109,7 @@ export class ExpComponent implements OnInit {
         }
       }).toArray()
     }).toArray()
+    console.log(newElements)
     let l = new E.Lineage(this._lineage.chain, new E.Matrix(newElements))
     this.changed.emit(l)
   }

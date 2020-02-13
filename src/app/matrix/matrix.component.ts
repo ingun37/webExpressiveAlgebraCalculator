@@ -60,6 +60,7 @@ export class MatrixComponent implements OnInit {
         return [y.horinum, y.vertnum]
       })
     ).subscribe(newSize => {
+      console.log("new siz",newSize)
       this.resized.emit(newSize)
     })
 

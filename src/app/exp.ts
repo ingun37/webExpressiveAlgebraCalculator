@@ -101,6 +101,18 @@ export class Scalar implements Exp {
             }
         }
     }
+    get inverse():Scalar {
+        let n = this.n
+        if(isRational(n)) {
+            return new Scalar(new Rational(n.denominator, n.numerator))
+        } else {
+            if (Number.isInteger(n)) {
+                return new Scalar(new Rational(1, n))
+            } else {
+                return new Scalar(1/n)
+            }
+        }
+    }
 }
 export class Add implements Associative {
     isEq(e: Exp): boolean {
@@ -238,13 +250,13 @@ function add2(l:Exp, r:Exp): Exp {
     return null
 }
 
-function rng2(start:number, lessThan:number): Sequence<number> {
+export function rng2(start:number, lessThan:number): Sequence<number> {
     if (start == lessThan-1) {
         return asSequence([start])
     }
     return range(start, lessThan-1, 1)
 }
-function rng(n:number): Sequence<number> {
+export function rng(n:number): Sequence<number> {
     if ( n == 1) {
         return asSequence([0])
     }
@@ -487,8 +499,6 @@ export class Negate implements Exp {
         }
         return new Mul(new Scalar(-1), e).eval()
     }
-
-    
 }
 
 export class Power implements Exp {
@@ -526,39 +536,23 @@ export class Power implements Exp {
             let exponentNumber = ex.n
             if (isNumber(exponentNumber)) {
                 if (exponentNumber == 0) {
-                    if (base instanceof Matrix) {
-                        return new Matrix(base.elements.map((row, ri)=>
-                            row.map((e, ci):Exp=>
-                                ri == ci ? new Scalar(1) : new Scalar(0)
-                            )
-                        ))
-                    } else if (base instanceof Scalar) {
-                        return new Scalar(1)
-                    }
+                    return new Scalar(1)
                 } else if (exponentNumber == 1) {
                     return base
                 } else if (Number.isInteger(exponentNumber)) {
                     let result = rng(Math.abs(exponentNumber)).map(x=>base).fold(new Scalar(1),(l:Exp,r)=>{
-                        console.log('mul')
                         return new Mul(l,r)
                     }).eval()
-                    console.log(result)
-                    if (result instanceof Scalar ) {
-                        if (exponentNumber < 0) {
-                            let resultN = result.n
-                            if (isRational(resultN)) {
-                                return new Scalar(new Rational(resultN.denominator, resultN.numerator))
-                            } else if (Number.isInteger(resultN)) {
-                                return new Scalar(new Rational(1, resultN))
-                            } else {
-                                return new Scalar(1/resultN)
-                            }
-                        } else {
-                            return result
+                    if (exponentNumber < 0) {
+                        if (result instanceof Scalar) {
+                            return result.inverse
+                        } else if (result instanceof Matrix) {
+                            //todo return matrix inverse
                         }
+                    } else {
+                        return result
                     }
                 }
-
             }
         }
 
